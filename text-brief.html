@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工事周知・変更連絡管理AI 事業モデル整理</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20242a;
+      --muted: #656d78;
+      --line: #d9dee5;
+      --paper: #f6f7f9;
+      --white: #ffffff;
+      --green: #0f766e;
+      --green-soft: #e7f5f3;
+      --blue: #2f5f9f;
+      --blue-soft: #e9f0fb;
+      --amber: #a65f00;
+      --amber-soft: #fff4df;
+      --red: #a73535;
+      --red-soft: #fbeaea;
+      --gray-soft: #eceff3;
+      --shadow: 0 10px 28px rgba(19, 25, 33, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px 56px;
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      align-items: end;
+      padding: 52px 0 28px;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.94fr);
+      gap: 28px;
+      align-items: end;
+    }
+
+    .kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      width: fit-content;
+      border: 1px solid var(--line);
+      background: var(--white);
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.18;
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    h1 {
+      margin-top: 22px;
+      font-size: clamp(36px, 7vw, 76px);
+      max-width: 10.6em;
+    }
+
+    .lead {
+      margin: 22px 0 0;
+      max-width: 720px;
+      font-size: clamp(17px, 2.2vw, 22px);
+      color: #303843;
+    }
+
+    .thesis {
+      margin-top: 24px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .thesis-line {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .mark {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hero-visual {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .visual-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green);
+    }
+
+    .status-dot::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .stack {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .stack-row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .stack-label {
+      background: var(--gray-soft);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #3d4652;
+    }
+
+    .stack-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+      font-size: 14px;
+    }
+
+    .stack-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -20px 34px;
+      padding: 10px 20px;
+      background: rgba(246, 247, 249, 0.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .nav a {
+      display: inline-block;
+      margin-right: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    section {
+      margin: 44px 0;
+      scroll-margin-top: 78px;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(26px, 4.2vw, 42px);
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(19, 25, 33, 0.04);
+    }
+
+    .card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .card p,
+    .card li {
+      color: #3b4350;
+      font-size: 15px;
+    }
+
+    .card p {
+      margin: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .tag.green { background: var(--green-soft); color: var(--green); }
+    .tag.blue { background: var(--blue-soft); color: var(--blue); }
+    .tag.amber { background: var(--amber-soft); color: var(--amber); }
+    .tag.red { background: var(--red-soft); color: var(--red); }
+
+    .metric {
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric strong {
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .flow-step {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 144px;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      width: 14px;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .num {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .flow-step h3 {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .matrix-cell {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .matrix-cell:nth-child(odd) {
+      border-right: 1px solid var(--line);
+    }
+
+    .matrix-cell:nth-last-child(-n+2) {
+      border-bottom: 0;
+    }
+
+    .matrix-cell h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .matrix-cell p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .price-table,
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: table;
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 13px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef2f6;
+      color: #343c47;
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .callout {
+      border-left: 5px solid var(--green);
+      background: var(--white);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .callout strong {
+      display: block;
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: #3d4652;
+    }
+
+    .demo-stage {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .demo-stage:last-child {
+      border-bottom: 0;
+    }
+
+    .time {
+      background: var(--ink);
+      color: white;
+      border-radius: 8px;
+      padding: 8px;
+      font-weight: 900;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .demo-stage h3 {
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .demo-stage p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.45em;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 5px solid var(--green);
+      background: white;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 54px;
+      padding: 24px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .hero {
+        min-height: auto;
+        padding-top: 32px;
+      }
+
+      .hero-grid,
+      .grid.two,
+      .grid.three,
+      .flow,
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        margin-top: 6px;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .flow-step:not(:last-child)::after {
+        display: none;
+      }
+
+      .matrix-cell,
+      .matrix-cell:nth-child(odd) {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .matrix-cell:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 0 14px 42px;
+      }
+
+      .nav {
+        margin-left: -14px;
+        margin-right: -14px;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .stack-row {
+        grid-template-columns: 1fr;
+      }
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        border-bottom: 1px solid var(--line);
+      }
+
+      tr:last-child {
+        border-bottom: 0;
+      }
+
+      td {
+        border-bottom: 0;
+        padding: 10px 13px;
+      }
+
+      td::before {
+        content: attr(data-label);
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        margin-bottom: 2px;
+      }
+
+      .demo-stage {
+        grid-template-columns: 1fr;
+      }
+
+      .time {
+        width: fit-content;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .card,
+      .hero-visual,
+      .callout {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="kicker">事業理解ブリーフ / 2026-07-06</div>
+          <h1>工事周知・変更連絡管理AI</h1>
+          <p class="lead">
+            工事会社の既存書類から、近隣周知、変更通知、問い合わせ削減、発注者報告をまとめて作る。住民向けアプリではなく、工事事業者向けの外部説明オペレーション支援として考える。
+          </p>
+          <div class="thesis">
+            <div class="thesis-line"><span class="mark">1</span><span>売るものは「AIチラシ」ではない。現場代理人の地域対応と発注者報告を軽くする運用パック。</span></div>
+            <div class="thesis-line"><span class="mark">2</span><span>最初はSaaSではなく、1現場パックと月額運用。ソロでも固定費を低くして食える設計にする。</span></div>
+            <div class="thesis-line"><span class="mark">3</span><span>ハッカソンでは、OCR、地図、QR、ODPT/GTFSをつなぎ、駅・バス停から目的地までの徒歩影響を見せる。</span></div>
+          </div>
+        </div>
+
+        <aside class="hero-visual" aria-label="事業構造の概要">
+          <div class="visual-title">
+            <span>この事業の本体</span>
+            <span class="status-dot">人間承認後に公開</span>
+          </div>
+          <div class="stack">
+            <div class="stack-row">
+              <div class="stack-label">入力</div>
+              <div class="stack-box"><strong>既存資料</strong>道路使用許可資料、工事概要、工程表、作業帯図、看板写真</div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">処理</div>
+              <div class="stack-box"><strong>OCR/AI + 確認</strong>場所、期間、時間帯、規制、連絡先を抽出し、出典と信頼度を表示</div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">出力</div>
+              <div class="stack-box"><strong>周知物一式</strong>QRページ、A4チラシ、変更通知、FAQ、発注者レポート</div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">収益</div>
+              <div class="stack-box"><strong>工事主体が支払う</strong>1現場5万から25万円、複数現場は月額10万から30万円</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="ページ内ナビゲーション">
+      <a href="#answer">結論</a>
+      <a href="#model">ビジネスモデル</a>
+      <a href="#customer">顧客</a>
+      <a href="#flow">サービス</a>
+      <a href="#hackathon">ハッカソン</a>
+      <a href="#risk">リスク</a>
+      <a href="#solo">ソロ戦略</a>
+      <a href="#validate">検証</a>
+    </nav>
+
+    <section id="answer">
+      <div class="section-head">
+        <h2>まず結論</h2>
+        <p>このテーマは、ソロプレナーが小さく始める事業としては成立余地がある。ただし、見せ方を間違えると安い制作代行になる。</p>
+      </div>
+
+      <div class="grid three">
+        <article class="card">
+          <span class="tag green">やる価値</span>
+          <h3>条件付きYes</h3>
+          <p>需要はある。だが、最初から大きなSaaSを狙うより、工事周知の半自動代行と確認ワークフローで実績を作る方が現実的。</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">最大の注意</span>
+          <h3>AIチラシに見せない</h3>
+          <p>CanvaやAdobe Expressでチラシ作成は安くできる。価値は、変更履歴、承認、問い合わせFAQ、発注者報告にある。</p>
+        </article>
+        <article class="card">
+          <span class="tag blue">勝ち筋</span>
+          <h3>小規模現場の面倒を見る</h3>
+          <p>大企業が採算を合わせにくい、現場別の細かい周知、変更、報告を拾う。個人の固定費の低さを使う。</p>
+        </article>
+      </div>
+
+      <div class="callout" style="margin-top: 16px;">
+        <strong>一番短い説明</strong>
+        <p>既存の道路使用許可資料・作業帯図・工程表から、近隣周知ページ、QR、A4チラシ、変更通知、FAQ、発注者報告を作ります。新しい書類仕事は増やしません。</p>
+      </div>
+    </section>
+
+    <section id="model">
+      <div class="section-head">
+        <h2>ビジネスモデル</h2>
+        <p>住民からは課金しない。支払者は工事主体、または工事会社と接点を持つ周辺事業者。最初は成果物込みの業務委託で売る。</p>
+      </div>
+
+      <div class="matrix">
+        <div class="matrix-cell">
+          <h3>誰が払うか</h3>
+          <p>道路・舗装・維持補修の元請、水道・ガス・電気・通信の占用工事会社、看板・警備・申請代行・印刷会社。</p>
+        </div>
+        <div class="matrix-cell">
+          <h3>何に払うか</h3>
+          <p>チラシではなく、周知ページ、変更通知、FAQ、承認履歴、発注者向け報告資料の一式。</p>
+        </div>
+        <div class="matrix-cell">
+          <h3>なぜ払うか</h3>
+          <p>同じ問い合わせ、変更連絡、周知記録、発注者報告の手間を減らすから。現場代理人の時間を守る。</p>
+        </div>
+        <div class="matrix-cell">
+          <h3>どう広げるか</h3>
+          <p>直販だけでなく、看板・警備・申請代行・印刷会社を紹介元にする。既存商材にQR周知を足す。</p>
+        </div>
+      </div>
+
+      <h3 style="margin: 24px 0 10px;">価格仮説</h3>
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th>価格</th>
+            <th>中身</th>
+            <th>狙い</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="商品">ミニマム現場QRパック</td>
+            <td data-label="価格">5万〜8万円/現場</td>
+            <td data-label="中身">QRページ、A4周知文、簡易FAQ、1回の変更対応</td>
+            <td data-label="狙い">最初の有料検証。安すぎる制作代行にしない最低線。</td>
+          </tr>
+          <tr>
+            <td data-label="商品">標準近隣周知パック</td>
+            <td data-label="価格">12万〜25万円/現場</td>
+            <td data-label="中身">OCR、出典確認、町会・店舗文面、変更履歴、発注者レポート</td>
+            <td data-label="狙い">本命商品。現場代理人と発注者報告の負担を減らす。</td>
+          </tr>
+          <tr>
+            <td data-label="商品">高影響現場パック</td>
+            <td data-label="価格">30万〜80万円/現場</td>
+            <td data-label="中身">駅前、商店街、夜間、複数日、迂回、多言語、ODPT/GTFS影響表示</td>
+            <td data-label="狙い">ハッカソンの見せ場と将来の高単価案件。</td>
+          </tr>
+          <tr>
+            <td data-label="商品">月額運用</td>
+            <td data-label="価格">10万〜30万円/月</td>
+            <td data-label="中身">月5〜15現場、テンプレート運用、変更履歴、月次レポート</td>
+            <td data-label="狙い">ソロで食っていくための安定収益。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="customer">
+      <div class="section-head">
+        <h2>最初に狙う顧客</h2>
+        <p>自治体から始めない。調達が遅く、実績のない個人には重い。まず現場を持つ事業者か、工事会社に既に入っている提携先から入る。</p>
+      </div>
+
+      <div class="grid three">
+        <article class="card">
+          <span class="tag green">第1候補</span>
+          <h3>道路・舗装・維持補修の元請</h3>
+          <p>地域対応、夜間工事、迂回、発注者報告が絡みやすい。1現場パックを売りやすい。</p>
+        </article>
+        <article class="card">
+          <span class="tag blue">紹介導線</span>
+          <h3>看板・警備・申請代行・印刷</h3>
+          <p>既存顧客にQR周知ページと変更履歴を足せる。ソロの営業力不足を補える。</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">月額化候補</span>
+          <h3>水道・ガス・電気・通信</h3>
+          <p>小工事が多く、テンプレート化に向く。ただし承認フローが複雑なので初回営業はやや難しい。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="flow">
+      <div class="section-head">
+        <h2>サービスの流れ</h2>
+        <p>「入力フォームを増やすサービス」ではなく、既存資料から外部説明に変換するサービスにする。</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step">
+          <span class="num">1</span>
+          <h3>既存資料</h3>
+          <p>道路使用許可資料、工程表、作業帯図、看板写真をアップロード。</p>
+        </div>
+        <div class="flow-step">
+          <span class="num">2</span>
+          <h3>抽出</h3>
+          <p>工事名、場所、期間、時間帯、規制、施工者、連絡先を構造化。</p>
+        </div>
+        <div class="flow-step">
+          <span class="num">3</span>
+          <h3>承認</h3>
+          <p>AIは下書き。出典、信頼度、赤字の要確認項目を人間が確認。</p>
+        </div>
+        <div class="flow-step">
+          <span class="num">4</span>
+          <h3>周知</h3>
+          <p>QRページ、A4、町会文面、店舗向け文面、FAQを生成。</p>
+        </div>
+        <div class="flow-step">
+          <span class="num">5</span>
+          <h3>報告</h3>
+          <p>変更履歴、閲覧数、問い合わせログを発注者レポート化。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="hackathon">
+      <div class="section-head">
+        <h2>ハッカソンでの出し方</h2>
+        <p>提出名は「AIチラシ」ではなく、社会課題、公共交通データ、住民UX、事業化が見える名前にする。</p>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <span class="tag green">提出テーマ名</span>
+          <h3>工事影響コミュニケーションAI</h3>
+          <p>工事会社の既存資料から確認済み周知情報を作り、住民・店舗・公共交通利用者に伝える。ODPT/GTFSは駅・バス停から目的地までの徒歩影響を見るレイヤーとして使う。</p>
+        </article>
+        <article class="card">
+          <span class="tag blue">審査での見せ場</span>
+          <h3>移動影響の可視化</h3>
+          <p>単なる書類生成では弱い。工事範囲と駅・バス停、徒歩動線を重ね、「誰に関係ある工事か」を絞るところを見せる。</p>
+        </article>
+      </div>
+
+      <h3 style="margin: 24px 0 10px;">2分デモ構成</h3>
+      <div class="card">
+        <div class="demo-stage">
+          <div class="time">0:00</div>
+          <div>
+            <h3>課題</h3>
+            <p>現場は近隣説明、変更連絡、同じ問い合わせ、発注者報告に追われる。住民は「今日ここを通れるか」だけ知りたい。</p>
+          </div>
+        </div>
+        <div class="demo-stage">
+          <div class="time">0:20</div>
+          <div>
+            <h3>入力</h3>
+            <p>道路使用許可関連PDF、工程表、作業帯図、看板写真をアップロード。</p>
+          </div>
+        </div>
+        <div class="demo-stage">
+          <div class="time">0:45</div>
+          <div>
+            <h3>AI/OCR構造化</h3>
+            <p>抽出結果は下書き。信頼度の低い項目を赤字にし、出典つきで確認。</p>
+          </div>
+        </div>
+        <div class="demo-stage">
+          <div class="time">1:10</div>
+          <div>
+            <h3>周知物生成</h3>
+            <p>QRページ、A4チラシ、変更通知、FAQ、発注者レポートを生成。</p>
+          </div>
+        </div>
+        <div class="demo-stage">
+          <div class="time">1:35</div>
+          <div>
+            <h3>ODPT/GTFS接続</h3>
+            <p>近い駅・バス停と徒歩アクセスへの影響を表示。運行変更ではなく、ラストワンマイル影響として見せる。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="risk">
+      <div class="section-head">
+        <h2>失敗理由と先回り対策</h2>
+        <p>最初から失敗理由を潰す設計にする。特に誤情報公開と安売り化は、後から直すより最初からルールにした方がいい。</p>
+      </div>
+
+      <table class="risk-table">
+        <thead>
+          <tr>
+            <th>失敗理由</th>
+            <th>起きる理由</th>
+            <th>先に建てる対策</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="失敗理由">面倒止まりで予算化されない</td>
+            <td data-label="起きる理由">「便利そう」だけでは現場予算に乗らない。</td>
+            <td data-label="先に建てる対策">地域連携、周知資料作成、変更連絡管理、発注者報告として見積化。</td>
+          </tr>
+          <tr>
+            <td data-label="失敗理由">AIチラシに見えて単価が下がる</td>
+            <td data-label="起きる理由">一般デザインツールでチラシは安く作れる。</td>
+            <td data-label="先に建てる対策">チラシは副産物。周知証跡、変更履歴、発注者レポートを本体にする。</td>
+          </tr>
+          <tr>
+            <td data-label="失敗理由">誤情報公開でクレームになる</td>
+            <td data-label="起きる理由">期間、場所、規制、連絡先の誤りは現場トラブルになる。</td>
+            <td data-label="先に建てる対策">自動公開禁止、人間承認、出典表示、OCR信頼度、公開停止を必須化。</td>
+          </tr>
+          <tr>
+            <td data-label="失敗理由">初期営業が突破できない</td>
+            <td data-label="起きる理由">ソロには建設業界の信用や紹介網がない。</td>
+            <td data-label="先に建てる対策">看板、警備、申請代行、印刷会社との提携から入る。</td>
+          </tr>
+          <tr>
+            <td data-label="失敗理由">大企業や既存業者に模倣される</td>
+            <td data-label="起きる理由">AI生成だけならすぐ真似される。</td>
+            <td data-label="先に建てる対策">工種別テンプレ、発注者別表現、FAQ、変更履歴、証跡DB、地域実績で勝つ。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="solo">
+      <div class="section-head">
+        <h2>ソロで食っていく設計</h2>
+        <p>大企業と正面からSaaSで戦わない。固定費が低い個人だから成立する、手間込みの小規模運用に寄せる。</p>
+      </div>
+
+      <div class="grid three">
+        <article class="card metric">
+          <span class="tag green">月商例</span>
+          <strong>75万</strong>
+          <span>月15万円の継続支援を5社。ソロなら食える水準。</span>
+        </article>
+        <article class="card metric">
+          <span class="tag blue">初期目標</span>
+          <strong>2件</strong>
+          <span>まず有料パイロットを2件。無料実績ではなく支払い意思を見る。</span>
+        </article>
+        <article class="card metric">
+          <span class="tag amber">守る線</span>
+          <strong>5万</strong>
+          <span>1現場の最低価格。これより下は責任の重さに対して危ない。</span>
+        </article>
+      </div>
+
+      <div class="callout" style="margin-top: 16px;">
+        <strong>大企業が来た時の考え方</strong>
+        <p>安売りで消耗するのではなく、大企業が拾いにくい小規模現場、急な変更、地域事情、発注者別の報告様式、現場別の細かい対応で勝つ。個人の強みは低コストではなく、接触密度と対応速度。</p>
+      </div>
+    </section>
+
+    <section id="validate">
+      <div class="section-head">
+        <h2>今すぐやる検証</h2>
+        <p>実装より先に、有料で買われる条件を確認する。聞く相手は住民ではなく、現場代理人、元請、看板・警備・申請代行会社。</p>
+      </div>
+
+      <div class="grid two">
+        <article class="card">
+          <span class="tag green">聞くこと</span>
+          <ul class="checklist">
+            <li>近隣周知、変更連絡、発注者報告に1現場何時間かかるか。</li>
+            <li>過去にクレームが出た工事パターンは何か。</li>
+            <li>発注者報告に何を残しているか。</li>
+            <li>1現場8万円で買うか。買わない理由は何か。</li>
+            <li>変更発生時、何分以内の更新なら価値があるか。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag blue">90日ロードマップ</span>
+          <ul class="checklist">
+            <li>1〜30日: 現場代理人、元請、提携候補15社に有料前提でヒアリング。</li>
+            <li>31〜60日: 実書類10件で手作業納品デモを作り、発注者報告に使えるか確認。</li>
+            <li>61〜90日: 1現場5万〜8万円で2件受注し、作業時間と問い合わせ削減を測る。</li>
+            <li>その後: 月額運用、ホワイトラベル、SaaS化の順に進める。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="section-head">
+        <h2>根拠資料</h2>
+        <p>このHTMLは、ここまで作成した調査メモと一次情報をもとに整理した。</p>
+      </div>
+      <div class="card">
+        <ul class="source-list">
+          <li><a href="https://www.keishicho.metro.tokyo.lg.jp/tetsuzuki/kotsu/road_permission.html">警視庁 道路使用許可申請手続き</a></li>
+          <li><a href="https://www.keishicho.metro.tokyo.lg.jp/tetsuzuki/kotsu/koujirenraku.html">警視庁 行政手続きオンラインによる工事連絡</a></li>
+          <li><a href="https://www.mlit.go.jp/road/sign/kijyun/pdf/20060331koujihyouji.pdf">国土交通省 道路工事現場における標示施設等の設置基準</a></li>
+          <li><a href="https://www.ktr.mlit.go.jp/gijyutu/gijyutu00000035.html">国土交通省 関東地方整備局 土木工事共通仕様書</a></li>
+          <li><a href="https://www.mlit.go.jp/tec/koujisekisan_00001.html">国土交通省 土木工事積算基準関係</a></li>
+          <li><a href="https://www.mlit.go.jp/report/press/joho04_hh_001282.html">国土交通省 建設工事受注動態統計調査報告</a></li>
+          <li><a href="https://challenge2026.odpt.org/ja/outline.html">公共交通オープンデータチャレンジ2026</a></li>
+          <li><a href="https://challenge2026.odpt.org/ja/opendata.html">公共交通オープンデータチャレンジ2026 公開データ</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>作成場所: output/construction-notice-business-brief/index.html</p>
+      <p>この資料の要点: AIそのものではなく、既存資料から周知、変更、報告を回す現場オペレーションを商品にする。</p>
+    </footer>
+  </main>
+</body>
+</html>

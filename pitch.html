@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工事周知AI ハッカソン提出ピッチ</title>
+  <style>
+    :root {
+      --ink: #202329;
+      --muted: #66707d;
+      --paper: #f6f2ea;
+      --white: #fffdfa;
+      --line: #d8dde4;
+      --blue: #285b9f;
+      --teal: #0f766e;
+      --amber: #a86500;
+      --red: #b53b3b;
+      --soft-blue: #e8f0fb;
+      --soft-teal: #e6f5f2;
+      --soft-amber: #fff0d1;
+      --soft-red: #fbe8e7;
+      --shadow: 0 16px 36px rgba(23, 28, 36, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--blue); text-underline-offset: 3px; }
+
+    .wrap {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 52px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--soft-teal);
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--teal);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 8vw, 68px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 840px;
+      margin: 16px 0 0;
+      color: #34404c;
+      font-size: clamp(17px, 2.4vw, 22px);
+      font-weight: 760;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: stretch;
+      margin-top: 22px;
+    }
+
+    .visual,
+    .panel,
+    .card {
+      background: var(--white);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .visual { padding: 8px; }
+    .visual img { display: block; width: 100%; height: auto; border-radius: 6px; }
+
+    .panel { padding: 18px; }
+
+    .panel h2,
+    section h2 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 5vw, 38px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .keyline {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 18px 0 0;
+      padding: 10px 0;
+      background: rgba(246, 242, 234, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav a {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    section { margin: 34px 0; scroll-margin-top: 62px; }
+
+    .grid { display: grid; gap: 14px; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card { padding: 16px; box-shadow: 5px 5px 0 rgba(32, 35, 41, 0.08); }
+    .card strong { display: block; margin-bottom: 7px; font-size: 20px; line-height: 1.25; }
+    .card p { margin: 0; color: #3e4854; }
+
+    .chip {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .chip.blue { background: var(--soft-blue); color: var(--blue); }
+    .chip.teal { background: var(--soft-teal); color: var(--teal); }
+    .chip.amber { background: var(--soft-amber); color: var(--amber); }
+    .chip.red { background: var(--soft-red); color: var(--red); }
+
+    .score {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .score + .score { margin-top: 10px; }
+    .score b { color: var(--teal); }
+    .score p { margin: 0; color: #3e4854; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .step {
+      position: relative;
+      min-height: 142px;
+      padding: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 44%;
+      right: -17px;
+      z-index: 1;
+      color: var(--amber);
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .step b { display: block; margin-bottom: 6px; }
+    .step span { color: var(--muted); font-size: 13px; }
+
+    .script {
+      white-space: pre-wrap;
+      margin: 0;
+      padding: 16px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: #fff9eb;
+      color: #2d3137;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    ul { margin: 0; padding-left: 20px; color: #3e4854; }
+    li + li { margin-top: 7px; }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .two,
+      .three,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .step { min-height: auto; }
+      .step:not(:last-child)::after {
+        top: auto;
+        right: 16px;
+        bottom: -27px;
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 22px, 1120px); padding-top: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .score { grid-template-columns: 1fr; }
+      .visual { padding: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <a class="back" href="index.html">← ビジュアル整理へ戻る</a>
+      <span class="badge">ハッカソン提出用</span>
+    </div>
+
+    <header>
+      <h1>工事周知AIを、入賞狙いの提出テーマにする</h1>
+      <p class="lead">勝ち筋は「AIチラシ」ではなく、既存の工事資料から住民周知・変更履歴・発注者報告・駅/バス停アクセス影響までつなぐこと。</p>
+      <div class="hero-grid">
+        <figure class="visual">
+          <img src="images/construction-notice-graphic-recording-v2.png" alt="工事周知AIの全体像">
+        </figure>
+        <aside class="panel">
+          <h2>提出時の一言</h2>
+          <p class="keyline">工事会社が既に作っている申請書・工程表・作業帯図・看板写真から、近隣住民と公共交通利用者に必要な「確認済みの工事周知」を自動生成し、変更履歴と発注者報告まで残すサービスです。</p>
+        </aside>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="ページ内ナビゲーション">
+      <a href="#fit">要項適合</a>
+      <a href="#demo">デモ</a>
+      <a href="#pitch">ピッチ</a>
+      <a href="#mvp">MVP</a>
+      <a href="#business">事業化</a>
+      <a href="#sources">一次情報</a>
+    </nav>
+
+    <section id="fit">
+      <h2>要項にどう刺すか</h2>
+      <div class="score">
+        <b>社会課題解決</b>
+        <p>工事現場の近隣説明、変更連絡、問い合わせ、発注者報告を減らす。住民側は「今日ここを通れるか」を見られる。</p>
+      </div>
+      <div class="score">
+        <b>オープンデータ活用</b>
+        <p>ODPT/GTFSは、駅・バス停から目的地までの徒歩アクセス影響を判定する層として使う。ほこナビ、PLATEAU、地理院地図、東京都工事情報も補助データにできる。</p>
+      </div>
+      <div class="score">
+        <b>技術的完成度</b>
+        <p>OCR/LLM構造化、地理空間判定、承認フロー、出典紐づけ、変更履歴、発注者報告を1本のデモにする。</p>
+      </div>
+      <div class="score">
+        <b>UI/UX</b>
+        <p>事業者は既存資料を入れて確認するだけ。住民はQRを読むだけ。アプリ登録や通知の前に、現場看板とA4から届く設計にする。</p>
+      </div>
+    </section>
+
+    <section id="demo">
+      <h2>2分デモの流れ</h2>
+      <div class="timeline">
+        <div class="step"><b>1. 既存資料</b><span>PDF、工程表、作業帯図、看板写真を入れる。</span></div>
+        <div class="step"><b>2. AI抽出</b><span>場所、期間、時間帯、規制、連絡先を構造化。</span></div>
+        <div class="step"><b>3. 人が承認</b><span>信頼度、出典、要確認だけを直して公開。</span></div>
+        <div class="step"><b>4. QR周知</b><span>住民ページ、A4、町会文面、FAQを生成。</span></div>
+        <div class="step"><b>5. 報告</b><span>変更履歴、閲覧、問い合わせを発注者向けに出す。</span></div>
+      </div>
+    </section>
+
+    <section id="pitch">
+      <h2>90秒ピッチ原稿</h2>
+      <pre class="script">工事会社は、申請書、工程表、作業帯図、看板、チラシ、変更連絡、発注者報告を別々に扱っています。住民や通行人は、市内の工事一覧ではなく、自分の家、店、通学路、駅からの道に関係ある情報だけを知りたい。
+
+このサービスでは、工事会社がすでに持っている資料をOCR/AIで構造化し、場所、期間、時間帯、規制内容、問い合わせ先を抽出します。ただしAIは下書きで、人間が承認してから公開します。承認後、QRページ、A4チラシ、町会・商店会文面、FAQ、変更履歴、発注者レポートを生成します。
+
+ODPT/GTFSは、工事そのものの情報源ではありません。駅・バス停から目的地までの徒歩アクセスに影響があるかを判定するレイヤーです。公共交通利用者が降りた後に困る「最後の数百メートル」を扱います。
+
+住民は無料、広告なし、位置情報販売なし。支払者は工事主体です。ハッカソンでは、書類アップロードからQRページ生成、駅・バス停影響、発注者報告までをデモします。</pre>
+    </section>
+
+    <section id="mvp">
+      <h2>MVPで作る画面</h2>
+      <div class="grid three">
+        <article class="card"><span class="chip blue">事業者</span><strong>資料アップロード</strong><p>道路使用許可資料、工程表、作業帯図、看板写真。</p></article>
+        <article class="card"><span class="chip teal">確認</span><strong>抽出・承認UI</strong><p>信頼度、出典、赤字の要確認、公開ボタン。</p></article>
+        <article class="card"><span class="chip amber">地図</span><strong>駅・バス停影響</strong><p>工事範囲と公共交通利用後の徒歩アクセス影響。</p></article>
+        <article class="card"><span class="chip blue">住民</span><strong>QRページ</strong><p>今日通れるか、時間帯、迂回、FAQ、連絡先。</p></article>
+        <article class="card"><span class="chip teal">周知</span><strong>A4/町会文面</strong><p>現場看板やポスティングに使える文面。</p></article>
+        <article class="card"><span class="chip red">証跡</span><strong>変更履歴・報告</strong><p>変更前後、承認者、公開日時、問い合わせ記録。</p></article>
+      </div>
+    </section>
+
+    <section id="business">
+      <h2>将来の収益モデル</h2>
+      <div class="grid two">
+        <article class="card">
+          <span class="chip amber">最初</span>
+          <strong>現場別パック</strong>
+          <ul>
+            <li>ミニマム現場パック: 5万〜8万円</li>
+            <li>標準近隣周知パック: 12万〜25万円</li>
+            <li>高影響現場: 30万〜80万円</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="chip teal">継続</span>
+          <strong>月額の外部周知担当</strong>
+          <ul>
+            <li>多現場事業者: 10万〜30万円/月</li>
+            <li>看板会社、警備会社、申請代行、印刷会社と提携</li>
+            <li>施工管理SaaS/発注者システム連携へ拡張</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2>一次情報メモ</h2>
+      <div class="grid two">
+        <article class="card">
+          <span class="chip blue">ODPT</span>
+          <strong>公共交通オープンデータチャレンジ2026</strong>
+          <p>公共交通オープンデータ活用が必須。審査は社会課題、データ活用、技術、UI/UX。</p>
+          <p><a href="https://challenge2026.odpt.org/ja/outline.html">開催概要</a> / <a href="https://challenge2026.odpt.org/ja/opendata.html">公開データ</a></p>
+        </article>
+        <article class="card">
+          <span class="chip amber">UDC</span>
+          <strong>アーバンデータチャレンジ2026</strong>
+          <p>作品タイプ「アプリケーション」、テーマ「道路・交通」に合わせやすい。GTFS賞の条件とも接続できる。</p>
+          <p><a href="https://urbandata-challenge.jp/udc2026_entry">作品募集要領</a></p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>関連資料: <a href="text-brief.html">詳細テキスト版</a> / <a href="index.html">ビジュアル整理</a></p>
+    </footer>
+  </main>
+</body>
+</html>

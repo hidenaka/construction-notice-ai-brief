@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>変更履歴・発注者報告の一次情報整理</title>
+  <style>
+    :root {
+      --ink: #1f252b;
+      --muted: #626e7b;
+      --paper: #f5f0e7;
+      --white: #fffdf8;
+      --line: #d8dde4;
+      --blue: #235d9f;
+      --green: #18745f;
+      --amber: #9b6200;
+      --red: #ad3c35;
+      --soft-blue: #e7f0fb;
+      --soft-green: #e5f4ee;
+      --soft-amber: #fff0cc;
+      --soft-red: #fbe8e4;
+      --shadow: 0 16px 38px rgba(25, 31, 38, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--blue); text-underline-offset: 3px; }
+
+    .page {
+      width: min(1160px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 13px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--soft-green);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 7vw, 62px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 16px 0 0;
+      color: #34414f;
+      font-size: clamp(17px, 2.2vw, 22px);
+      font-weight: 760;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 20px 0 0;
+      padding: 10px 0;
+      background: rgba(245, 240, 231, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav a {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    section {
+      margin: 36px 0;
+      scroll-margin-top: 68px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(25px, 5vw, 40px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; }
+
+    .grid { display: grid; gap: 14px; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card,
+    .wide-card,
+    .source-box {
+      background: var(--white);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .card { padding: 16px; }
+    .wide-card { padding: 18px; }
+    .source-box { padding: 14px; box-shadow: 5px 5px 0 rgba(31, 37, 43, 0.08); }
+
+    .chip {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .blue { background: var(--soft-blue); color: var(--blue); }
+    .green { background: var(--soft-green); color: var(--green); }
+    .amber { background: var(--soft-amber); color: var(--amber); }
+    .red { background: var(--soft-red); color: var(--red); }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .kpi b {
+      color: var(--green);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .kpi span { color: #374452; font-weight: 750; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+      background: var(--white);
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f4f8;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    td { color: #394554; }
+
+    .format {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 12px;
+      padding: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--white);
+    }
+
+    .format + .format { margin-top: 12px; }
+    .format strong { display: block; font-size: 18px; line-height: 1.25; }
+    .format ul { margin: 0; padding-left: 18px; color: #394554; }
+
+    .schema {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      min-height: 104px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .field b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .field span { color: #4c5967; font-size: 13px; }
+
+    .note {
+      margin-top: 12px;
+      padding: 12px;
+      border-left: 6px solid var(--amber);
+      background: var(--soft-amber);
+      color: #403325;
+      font-weight: 760;
+    }
+
+    .sources {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-box small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 38px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      .two,
+      .three,
+      .schema {
+        grid-template-columns: 1fr;
+      }
+
+      .format,
+      .kpi {
+        grid-template-columns: 1fr;
+      }
+
+      table { min-width: 680px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <a class="button" href="index.html">← トップ</a>
+      <a class="button" href="pitch.html">提出ピッチ</a>
+    </div>
+
+    <header>
+      <span class="tag">一次情報整理</span>
+      <h1>変更履歴・発注者報告は、どれくらい重い仕事か</h1>
+      <p class="lead">国交省と関東地方整備局の公開資料から、工事帳票、変更、協議、履歴管理、発注者報告の背景と、サービス側で持つべきフォーマットを整理した。</p>
+    </header>
+
+    <nav class="nav" aria-label="ページ内ナビゲーション">
+      <a href="#answer">結論</a>
+      <a href="#official">公式根拠</a>
+      <a href="#forms">帳票</a>
+      <a href="#burden">手間</a>
+      <a href="#schema">サービス項目</a>
+      <a href="#demo">デモ化</a>
+      <a href="#sources">出典</a>
+    </nav>
+
+    <section id="answer">
+      <h2>結論</h2>
+      <div class="grid three">
+        <article class="card">
+          <span class="chip green">確定</span>
+          <h3>正式な工事帳票である</h3>
+          <p>発注者報告は、メールや雑メモではなく、工事打合せ簿、工事履行報告書、変更工程表、変更施工計画書などの正式な書類と接続する。</p>
+        </article>
+        <article class="card">
+          <span class="chip blue">確定</span>
+          <h3>履歴管理が求められる</h3>
+          <p>国交省の情報共有システム要件では、承認状況、差し戻し、修正、差し替え、訂正、削除の履歴を残す設計になっている。</p>
+        </article>
+        <article class="card">
+          <span class="chip amber">注意</span>
+          <h3>平均時間は未確認</h3>
+          <p>一次情報だけでは「1現場あたり平均何時間」と断定できない。ここは現場代理人への実測ヒアリングが必要。</p>
+        </article>
+      </div>
+      <div class="note">ハッカソンでは「月◯時間削減」と断定せず、「変更・協議・報告のたびに、根拠探し、資料作成、差し戻し、承認履歴管理が発生している」と言うのが正確。</div>
+    </section>
+
+    <section id="official">
+      <h2>一次情報から見えた背景</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>確認した資料</th>
+              <th>読み取れること</th>
+              <th>サービスへの意味</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>土木工事共通仕様書 R8.3</td>
+              <td>「報告」は、受注者が監督職員へ工事状況・結果を書面で知らせる行為。情報共有システム上の工事帳票も書面として扱われる。</td>
+              <td>発注者報告は、単なる広報成果ではなく、工事の正式なやりとりに近い位置づけで扱うべき。</td>
+            </tr>
+            <tr>
+              <td>土木工事共通仕様書 R8.3</td>
+              <td>重要な変更が生じた場合、受注者は変更施工計画書を、その工事に着手する前に監督職員へ提出する。</td>
+              <td>「変更が起きたら住民向け周知も更新する」だけでなく、変更理由・承認・公開日時まで残す必要がある。</td>
+            </tr>
+            <tr>
+              <td>土木工事共通仕様書 R8.3</td>
+              <td>工期変更では、変更日数の算出根拠、変更工程表、必要資料を添付して監督職員と協議する。</td>
+              <td>発注者向け報告には、変更前後の差分、工程影響、根拠資料リンクを含めると価値が出る。</td>
+            </tr>
+            <tr>
+              <td>情報共有システム機能要件 R6.3</td>
+              <td>ワークフローで、承認履歴、現在の承認状況、閲覧状況、回答希望日、受付日、回答日などを一覧確認する設計。</td>
+              <td>サービス側も「誰がいつ確認したか」「どの版を公開したか」をデータとして持つべき。</td>
+            </tr>
+            <tr>
+              <td>情報共有システム活用ガイドライン R6.3</td>
+              <td>工事帳票の提出・受理・承諾・指示の処理は、発議書類作成機能とワークフロー機能で扱う。</td>
+              <td>AI生成物を自動公開せず、下書き、確認、承認、公開の段階を分ける必要がある。</td>
+            </tr>
+            <tr>
+              <td>関東地整 スリム化ガイド調査</td>
+              <td>受注者アンケートで、資料作成の過度な要求、ローカルルール、手戻り、発注者側資料の受注者対応が確認されている。</td>
+              <td>商品名は「チラシ作成」ではなく「変更連絡・周知証跡・発注者報告支援」に寄せる。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="forms">
+      <h2>取得できる公式フォーマット</h2>
+      <div class="wide-card">
+        <div class="format">
+          <strong>工事打合せ簿</strong>
+          <ul>
+            <li>発議者: 発注者 / 受注者</li>
+            <li>発議事項: 指示 / 協議 / 通知 / 承諾 / 報告 / 提出 / その他</li>
+            <li>工事名、内容、添付図、その他添付図書</li>
+            <li>発注者側の処理・回答、受注者側の処理・回答</li>
+            <li>年月日、監督員、現場代理人、主任技術者などの確認欄</li>
+          </ul>
+        </div>
+        <div class="format">
+          <strong>工事履行報告書</strong>
+          <ul>
+            <li>工事名、工期、日付、対象月</li>
+            <li>月別の予定工程%、実施工程%、備考</li>
+            <li>記事欄</li>
+            <li>主任監督員、監督員、現場代理人、主任/監理技術者の確認欄</li>
+          </ul>
+        </div>
+        <div class="format">
+          <strong>変更施工計画書・変更工程表</strong>
+          <ul>
+            <li>重要な変更が生じた場合、着手前に変更事項を提出</li>
+            <li>工期変更では、変更日数の算出根拠、変更工程表、必要資料を添付</li>
+            <li>CORINS対象工事では、変更時の登録期限も発生</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="burden">
+      <h2>手間の根拠</h2>
+      <div class="grid two">
+        <div class="kpi">
+          <b>10%</b>
+          <span>2025年3月公表の関東地整アンケートで、役割分担上は発注者だったが受注者が対応した回答。</span>
+        </div>
+        <div class="kpi">
+          <b>47%</b>
+          <span>そのうち、費用を見てもらえなかった回答。受注者側の持ち出しになりうる。</span>
+        </div>
+        <div class="kpi">
+          <b>6%</b>
+          <span>2026年3月公表の同アンケートで、役割分担上は発注者だったが受注者が対応した回答。</span>
+        </div>
+        <div class="kpi">
+          <b>27%</b>
+          <span>2026年調査で、その費用を見てもらえなかった回答。</span>
+        </div>
+      </div>
+      <div class="table-wrap" style="margin-top:14px;">
+        <table>
+          <thead>
+            <tr>
+              <th>一次情報上の回答例</th>
+              <th>このサービスで拾うべき処理</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>発注者用の所内会議資料を毎月作る、第三者向け説明資料を求められる。</td>
+              <td>住民向けページと同じ元データから、発注者向けサマリーと第三者説明資料を出す。</td>
+            </tr>
+            <tr>
+              <td>発注者の異動時に、過去の協議経緯や関係機関協議の経緯を説明するのが負担。</td>
+              <td>変更履歴、協議メモ、公開履歴、問い合わせ対応を時系列で残す。</td>
+            </tr>
+            <tr>
+              <td>工事履行報告書の実施工程%の根拠を求められた。</td>
+              <td>工程変更、周知変更、作業予定、実施済み内容を紐づけて根拠欄に出す。</td>
+            </tr>
+            <tr>
+              <td>資料作成・修正依頼が短納期で来る、時間外連絡が多い。</td>
+              <td>テンプレート化、差分抽出、承認待ち一覧、期限管理で手戻りを減らす。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="schema">
+      <h2>サービス側で持つべきデータ項目</h2>
+      <div class="wide-card">
+        <div class="schema">
+          <div class="field"><b>現場基本</b><span>工事名、発注者、施工者、連絡先、工期、作業時間帯、工種。</span></div>
+          <div class="field"><b>場所</b><span>住所、緯度経度、道路名、作業帯、迂回路、駅・バス停からの徒歩影響。</span></div>
+          <div class="field"><b>規制</b><span>片側交互通行、車両通行止め、歩道規制、夜間作業、騒音・振動注意。</span></div>
+          <div class="field"><b>出典</b><span>道路使用許可資料、工程表、作業帯図、看板写真、発注者資料。</span></div>
+          <div class="field"><b>変更履歴</b><span>変更前、変更後、理由、影響範囲、変更日時、公開日時。</span></div>
+          <div class="field"><b>承認</b><span>AI抽出者、確認者、承認者、差し戻し理由、承認日時。</span></div>
+          <div class="field"><b>周知</b><span>QRページ、A4、町会文面、店舗向け文面、多言語FAQ。</span></div>
+          <div class="field"><b>報告</b><span>閲覧数、問い合わせ件数、変更回数、公開URL、対応ログ、未解決事項。</span></div>
+        </div>
+        <div class="note">ここは法定書類の代替ではなく、発注者報告・近隣説明・変更連絡に使う補助資料として設計する。</div>
+      </div>
+    </section>
+
+    <section id="demo">
+      <h2>ハッカソンで見せるフォーマット</h2>
+      <div class="grid two">
+        <article class="card">
+          <span class="chip green">画面1</span>
+          <h3>既存資料の取り込み</h3>
+          <p>道路使用許可資料、工程表、作業帯図、看板写真を入れる。AIは場所、期間、規制、連絡先、発注者、施工者を抽出する。</p>
+        </article>
+        <article class="card">
+          <span class="chip blue">画面2</span>
+          <h3>確認・承認</h3>
+          <p>抽出結果に出典を紐づけ、公開可否、住民向け表現、発注者向け表現を人間が承認する。</p>
+        </article>
+        <article class="card">
+          <span class="chip amber">画面3</span>
+          <h3>変更履歴</h3>
+          <p>夜間作業が1日延長、歩道規制が追加などを変更前後で表示し、公開履歴と承認履歴を残す。</p>
+        </article>
+        <article class="card">
+          <span class="chip red">画面4</span>
+          <h3>発注者レポート</h3>
+          <p>QR公開URL、A4出力、変更回数、問い合わせ件数、未解決事項、次回周知予定を1枚にまとめる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2>一次情報</h2>
+      <div class="sources">
+        <div class="source-box">
+          <strong>国土交通省 技術調査: 監督・検査・工事成績評定・土木工事共通仕様書関係</strong>
+          <small><a href="https://www.mlit.go.jp/tec/tec_tk_000052.html">https://www.mlit.go.jp/tec/tec_tk_000052.html</a></small>
+        </div>
+        <div class="source-box">
+          <strong>土木工事共通仕様書（案）R8.3</strong>
+          <small><a href="https://www.mlit.go.jp/tec/content/001990182.pdf">https://www.mlit.go.jp/tec/content/001990182.pdf</a></small>
+        </div>
+        <div class="source-box">
+          <strong>土木工事・業務等の情報共有システム活用ガイドライン R6.3</strong>
+          <small><a href="https://www.mlit.go.jp/tec/content/001757574.pdf">https://www.mlit.go.jp/tec/content/001757574.pdf</a></small>
+        </div>
+        <div class="source-box">
+          <strong>工事施工中における受発注者間の情報共有システム機能要件 R6.3</strong>
+          <small><a href="https://www.mlit.go.jp/tec/content/001757560.pdf">https://www.mlit.go.jp/tec/content/001757560.pdf</a></small>
+        </div>
+        <div class="source-box">
+          <strong>国土交通省 工事関係書類の標準様式</strong>
+          <small><a href="https://www.mlit.go.jp/common/001261260.pdf">別添1</a> / <a href="https://www.mlit.go.jp/common/001261261.pdf">別添2</a></small>
+        </div>
+        <div class="source-box">
+          <strong>関東地方整備局 工事書類の簡素化・統一化</strong>
+          <small><a href="https://www.ktr.mlit.go.jp/gijyutu/gijyutu00000037.html">https://www.ktr.mlit.go.jp/gijyutu/gijyutu00000037.html</a></small>
+        </div>
+        <div class="source-box">
+          <strong>関東地方整備局 スリム化ガイド アンケート結果 R7.3 / R8.3</strong>
+          <small><a href="https://www.ktr.mlit.go.jp/ktr_content/content/000911419.pdf">R7.3 PDF</a> / <a href="https://www.ktr.mlit.go.jp/ktr_content/content/000939048.pdf">R8.3 PDF</a></small>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      調査日: 2026年7月6日。数値は国交省・関東地方整備局の公開一次情報に基づく。平均作業時間は一次情報上で確認できていないため、現場ヒアリングで検証する。
+    </footer>
+  </main>
+</body>
+</html>
