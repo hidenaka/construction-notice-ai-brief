@@ -1,10 +1,37 @@
 import { buildLanePlan, laneSummary } from "./lane-plan.js";
-import { affectedUsersFromDraft, draftFromText, sampleDraft, traceFieldsFromDraft } from "./document-intake.js";
+import {
+  affectedUsersFromDraft,
+  draftFromText,
+  mapCandidateFromDraft,
+  reviewItemsFromDraft,
+  sampleDraft,
+  traceFieldsFromDraft,
+} from "./document-intake.js";
 import { inferLanePlanInput, inferenceSummary } from "./lane-inference.js";
 import { restrictionToShareUrl } from "./share-link.js";
 
 const GSI = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
-const state = { drawing: false, coordinates: [], markers: [], savedId: null, closedLaneIds: ["forward-1"], manualLaneOverride: false, inferenceAccepted: false };
+const RESTRICTION_LABELS = {
+  lane_closure: "車線規制",
+  sidewalk_closed: "歩道通行止め",
+  sidewalk_narrowed: "歩道狭小",
+  road_closed: "通行止め",
+  alternating_one_way: "片側交互通行",
+  bicycle_lane_closed: "自転車レーン規制",
+  turn_restriction: "右左折規制",
+};
+const state = {
+  drawing: false,
+  coordinates: [],
+  markers: [],
+  savedId: null,
+  closedLaneIds: ["forward-1"],
+  manualLaneOverride: false,
+  inferenceAccepted: false,
+  documentDraft: null,
+  documentSourceName: "",
+  mapCandidate: null,
+};
 
 const els = {
   title: document.getElementById("trace-title"),
@@ -12,6 +39,16 @@ const els = {
   documentStatus: document.getElementById("document-status"),
   documentList: document.getElementById("document-list"),
   sampleDocument: document.getElementById("sample-document"),
+  readoutTitle: document.getElementById("readout-title"),
+  readoutDates: document.getElementById("readout-dates"),
+  readoutTime: document.getElementById("readout-time"),
+  readoutType: document.getElementById("readout-type"),
+  readoutNote: document.getElementById("readout-note"),
+  reviewList: document.getElementById("review-list"),
+  mapCandidateCard: document.getElementById("map-candidate-card"),
+  mapCandidateStatus: document.getElementById("map-candidate-status"),
+  mapCandidateTitle: document.getElementById("map-candidate-title"),
+  mapCandidateDetail: document.getElementById("map-candidate-detail"),
   draftFields: document.getElementById("draft-fields"),
   start: document.getElementById("trace-start"),
   end: document.getElementById("trace-end"),
@@ -25,6 +62,7 @@ const els = {
   acceptInference: document.getElementById("accept-inference"),
   adjustInference: document.getElementById("adjust-inference"),
   rerunInference: document.getElementById("rerun-inference"),
+  advancedWork: document.getElementById("advanced-work"),
   advancedLanes: document.getElementById("advanced-lanes"),
   profileMode: document.getElementById("lane-profile-mode"),
   forwardLaneWidth: document.getElementById("forward-lane-width"),
@@ -42,8 +80,56 @@ const els = {
   save: document.getElementById("save-trace"),
   copy: document.getElementById("copy-geojson"),
   noticeLink: document.getElementById("notice-link"),
+  generatedNotice: document.getElementById("generated-notice"),
+  generatedHistory: document.getElementById("generated-history"),
+  generatedReport: document.getElementById("generated-report"),
   coordinateList: document.getElementById("coordinate-list"),
 };
+
+function restrictionLabel(value) {
+  return RESTRICTION_LABELS[value] || value || "未読取";
+}
+
+function percent(confidence) {
+  return `${Math.round(confidence * 100)}%`;
+}
+
+function hasReadValue(key) {
+  const value = state.documentDraft && state.documentDraft[key];
+  return value !== undefined && value !== null && value !== "";
+}
+
+function fieldValueForSnapshot(key, inputValue, defaultValue) {
+  if (hasReadValue(key)) return inputValue;
+  return inputValue && inputValue !== defaultValue ? inputValue : "";
+}
+
+function currentDraftSnapshot() {
+  const confidence = { ...(state.documentDraft && state.documentDraft.confidence) };
+  const defaults = traceFieldsFromDraft(state.documentDraft || {});
+  const title = fieldValueForSnapshot("title", els.title.value.trim(), defaults.title);
+  const startAt = fieldValueForSnapshot("startAt", els.start.value, defaults.startAt);
+  const endAt = fieldValueForSnapshot("endAt", els.end.value, defaults.endAt);
+  const timeWindow = fieldValueForSnapshot("timeWindow", els.time.value.trim(), defaults.timeWindow);
+  const restrictionType = fieldValueForSnapshot("restrictionType", els.type.value, defaults.restrictionType);
+  const mapCandidate = state.mapCandidate || (state.coordinates.length >= 2
+    ? { source: "地図上で補正済み", confidence: 1, coordinates: state.coordinates }
+    : null);
+  if (title && !hasReadValue("title")) confidence.title = 1;
+  if (startAt && endAt && !(hasReadValue("startAt") && hasReadValue("endAt"))) confidence.dates = 1;
+  if (timeWindow && !hasReadValue("timeWindow")) confidence.timeWindow = 1;
+  if (restrictionType && !hasReadValue("restrictionType")) confidence.restrictionType = 1;
+  return {
+    ...(state.documentDraft || {}),
+    title,
+    startAt,
+    endAt,
+    timeWindow,
+    restrictionType,
+    confidence,
+    mapCandidate,
+  };
+}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -67,13 +153,17 @@ async function draftFromFile(file) {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ imageBase64, mediaType: file.type || "application/pdf" }),
   });
-  if (!res.ok) throw new Error("OCR APIを使えません");
   const body = await res.json();
+  if (!res.ok) throw new Error(body && body.error ? body.error : "OCR APIを使えません");
   return body.draft;
 }
 
 function applyDraft(draft, sourceName = "資料") {
   const fields = traceFieldsFromDraft(draft);
+  const mapCandidate = mapCandidateFromDraft(draft);
+  state.documentDraft = draft;
+  state.documentSourceName = sourceName;
+  state.mapCandidate = mapCandidate;
   els.title.value = fields.title;
   els.start.value = fields.startAt;
   els.end.value = fields.endAt;
@@ -85,9 +175,14 @@ function applyDraft(draft, sourceName = "資料") {
   });
   state.manualLaneOverride = false;
   state.inferenceAccepted = false;
+  state.coordinates = mapCandidate ? mapCandidate.coordinates : [];
   markTraceChanged();
-  els.documentStatus.textContent = `${sourceName} から下書きを作りました。工事情報は補正欄に入っています。`;
+  els.documentStatus.textContent = `${sourceName} から下書きを作りました。読み取り結果と地図候補を確認してください。`;
+  els.status.textContent = mapCandidate
+    ? "資料から候補区間を地図に表示しました。低信頼の項目だけ確認してください。"
+    : "工事情報を読み取りました。区間候補がない場合は詳細補正から地図上で指定してください。";
   renderTrace();
+  if (mapCandidate && map.loaded()) fitToTrace();
 }
 
 async function handleDocumentFiles(files) {
@@ -99,7 +194,10 @@ async function handleDocumentFiles(files) {
     const draft = await draftFromFile(list[0]);
     applyDraft(draft, list[0].name);
   } catch (error) {
-    els.documentStatus.textContent = "この公開版では画像/PDFのOCR APIに接続できません。テキスト資料かサンプルで導線を確認してください。";
+    const message = error instanceof Error ? error.message : String(error);
+    els.documentStatus.textContent = message.includes("PDF") || message.includes("pdf")
+      ? "PDFは現在の無料OCR箱抽出サービスへ直接送れません。ページを画像化して読み込むか、Claude OCR fallbackを使う構成で処理してください。"
+      : "この公開版では画像/PDFのOCR APIに接続できません。テキスト資料かサンプルで導線を確認してください。";
     els.draftFields.open = true;
   }
 }
@@ -156,6 +254,100 @@ function formatDistance(meters) {
   return meters >= 1000 ? `${(meters / 1000).toFixed(2)}km` : `${Math.round(meters)}m`;
 }
 
+function renderReadout() {
+  if (!state.documentDraft) {
+    els.readoutTitle.textContent = "未読取";
+    els.readoutDates.textContent = "未読取";
+    els.readoutTime.textContent = "未読取";
+    els.readoutType.textContent = "未読取";
+    els.readoutNote.textContent = "資料を入れると、周知に必要な項目を既存資料から拾います。";
+    return;
+  }
+  const snapshot = currentDraftSnapshot();
+  const dates = snapshot.startAt || snapshot.endAt
+    ? `${snapshot.startAt || "未設定"} - ${snapshot.endAt || "未設定"}`
+    : "未読取";
+  els.readoutTitle.textContent = snapshot.title || "未読取";
+  els.readoutDates.textContent = dates;
+  els.readoutTime.textContent = snapshot.timeWindow || "未読取";
+  els.readoutType.textContent = snapshot.restrictionType ? restrictionLabel(snapshot.restrictionType) : "未読取";
+  els.readoutNote.textContent = state.documentSourceName
+    ? `${state.documentSourceName} から拾った内容です。違う箇所だけ補正してください。`
+    : "資料を入れると、周知に必要な項目を既存資料から拾います。";
+}
+
+function reviewItemText(item) {
+  if (!item.value) return `${item.label}: 未読取`;
+  return `${item.label}: ${item.value}（信頼度 ${percent(item.confidence)}）`;
+}
+
+function renderReviewItems() {
+  els.reviewList.replaceChildren();
+  if (!state.documentDraft) {
+    const li = document.createElement("li");
+    li.textContent = "資料を入れると、未読取または信頼度が低い項目だけ表示します。";
+    els.reviewList.append(li);
+    return;
+  }
+  const reviewItems = reviewItemsFromDraft(currentDraftSnapshot()).map((item) => {
+    if (item.id === "mapCandidate" && state.inferenceAccepted) return { ...item, needsReview: false };
+    return item;
+  });
+  const lowConfidenceItems = reviewItems.filter((item) => item.needsReview);
+  if (lowConfidenceItems.length === 0) {
+    const li = document.createElement("li");
+    li.className = "review-ok";
+    li.textContent = "確認が必要な低信頼項目はありません。";
+    els.reviewList.append(li);
+    return;
+  }
+  lowConfidenceItems.forEach((item) => {
+    const li = document.createElement("li");
+    const label = document.createElement("strong");
+    const text = document.createElement("span");
+    label.textContent = item.id === "mapCandidate" ? "要確認" : "確認";
+    text.textContent = reviewItemText(item);
+    li.append(label, text);
+    els.reviewList.append(li);
+  });
+}
+
+function renderMapCandidate() {
+  const hasLine = state.coordinates.length >= 2;
+  els.mapCandidateCard.classList.toggle("is-confirmed", state.inferenceAccepted && hasLine);
+  els.mapCandidateCard.classList.toggle("is-low-confidence", Boolean(state.mapCandidate && state.mapCandidate.needsReview && !state.inferenceAccepted));
+  if (!state.documentDraft) {
+    els.mapCandidateStatus.textContent = "未作成";
+    els.mapCandidateTitle.textContent = "資料を入れると候補区間を表示します";
+    els.mapCandidateDetail.textContent = "座標付き資料や保存済み候補がある場合は、区間線を地図に載せます。合っている場合は確認だけで進めます。";
+    return;
+  }
+  if (!hasLine) {
+    els.mapCandidateStatus.textContent = "候補なし";
+    els.mapCandidateTitle.textContent = "地図候補はまだ作成されていません";
+    els.mapCandidateDetail.textContent = "現状の画像OCRは工事項目の抽出までです。座標付き資料なら候補線を自動表示できますが、位置図の赤線を緯度経度へ転記する処理は次の実装対象です。";
+    return;
+  }
+  const confidence = state.mapCandidate ? percent(state.mapCandidate.confidence) : "手動";
+  els.mapCandidateStatus.textContent = state.inferenceAccepted ? "確認済み" : `信頼度 ${confidence}`;
+  els.mapCandidateTitle.textContent = state.mapCandidate
+    ? `${state.mapCandidate.source} から候補区間を作成`
+    : "地図上で補正した区間を使用";
+  els.mapCandidateDetail.textContent = `${state.coordinates.length}点 / ${formatDistance(totalMeters())}。公開データにはこの区間が住民向け地図・変更履歴・発注者報告へ共通反映されます。`;
+}
+
+function renderGeneratedOutputs() {
+  const generatedCards = [els.generatedNotice, els.generatedHistory, els.generatedReport];
+  generatedCards.forEach((card) => card.classList.toggle("is-generated", Boolean(state.savedId)));
+}
+
+function renderDocumentPanels() {
+  renderReadout();
+  renderReviewItems();
+  renderMapCandidate();
+  renderGeneratedOutputs();
+}
+
 function selectedAffectedUsers() {
   return [...document.querySelectorAll('input[name="affected"]:checked')].map((input) => input.value);
 }
@@ -186,6 +378,7 @@ function tracePayload() {
     laneSummary: lanePlan ? laneSummary(lanePlan) : null,
     autoInference: currentInference(),
     inferenceAccepted: state.inferenceAccepted,
+    documentSourceName: state.documentSourceName || null,
   };
 }
 
@@ -208,12 +401,14 @@ function renderMarkers() {
       .setLngLat(coord)
       .addTo(map);
     marker.on("drag", () => {
+      if (state.mapCandidate) state.mapCandidate = null;
       markTraceChanged();
       const lngLat = marker.getLngLat();
       state.coordinates[index] = [lngLat.lng, lngLat.lat];
       renderTrace({ keepMarkers: true });
     });
     marker.on("dragend", () => {
+      if (state.mapCandidate) state.mapCandidate = null;
       markTraceChanged();
       const lngLat = marker.getLngLat();
       state.coordinates[index] = [lngLat.lng, lngLat.lat];
@@ -250,6 +445,7 @@ function renderTrace(options = {}) {
   els.adjustInference.disabled = !hasLine;
   els.rerunInference.disabled = !hasLine;
   if (!hasLine) els.noticeLink.hidden = true;
+  renderDocumentPanels();
 }
 
 function emptyFeatureCollection() {
@@ -339,8 +535,8 @@ function renderProfileNote() {
 function renderInference() {
   const inference = currentInference();
   if (!inference) {
-    els.inferenceSummary.textContent = "施工区間を2点以上引くと、規制形状を自動で作ります。";
-    els.inferenceReason.textContent = "車線数・幅・テーパーは画面側で推定します。作業者は合っているかだけ確認します。";
+    els.inferenceSummary.textContent = "候補区間がない場合や読み取り結果が怪しい場合だけ、地図上で補正します。";
+    els.inferenceReason.textContent = "車線数・幅・テーパーは自動推定します。通常は合っているかの確認だけで進めます。";
     return;
   }
   const prefix = state.manualLaneOverride ? "手動補正中: " : state.inferenceAccepted ? "確認済み: " : "";
@@ -441,20 +637,21 @@ map.on("load", () => {
 
 map.on("click", (event) => {
   if (!state.drawing) return;
+  if (state.mapCandidate) state.mapCandidate = null;
   state.coordinates.push([event.lngLat.lng, event.lngLat.lat]);
   markTraceChanged();
   els.status.textContent = state.coordinates.length < 2
     ? "終点をクリックしてください。"
-    : "赤い点をドラッグして申請区間に合わせてください。";
+    : "候補線を補正しました。赤い点はドラッグで微調整できます。";
   renderTrace();
 });
 
 els.drawToggle.onclick = () => {
   state.drawing = !state.drawing;
-  els.drawToggle.textContent = state.drawing ? "描画を止める" : "線を引く";
+  els.drawToggle.textContent = state.drawing ? "補正を止める" : "地図上で区間を補正";
   els.status.textContent = state.drawing
     ? "地図上で施工区間の始点、曲がり角、終点をクリックしてください。"
-    : "赤い点をドラッグして微調整できます。";
+    : "候補線は赤い点をドラッグして微調整できます。";
 };
 
 els.undo.onclick = () => {
@@ -466,10 +663,11 @@ els.undo.onclick = () => {
 
 els.clear.onclick = () => {
   state.coordinates = [];
+  state.mapCandidate = null;
   state.savedId = null;
   state.manualLaneOverride = false;
   state.inferenceAccepted = false;
-  els.status.textContent = "施工区間を削除しました。もう一度地図上で線を引いてください。";
+  els.status.textContent = "候補区間を削除しました。必要な場合だけ地図上で指定してください。";
   renderTrace();
 };
 
@@ -478,7 +676,7 @@ els.acceptInference.onclick = () => {
   state.manualLaneOverride = false;
   state.inferenceAccepted = true;
   els.advancedLanes.open = false;
-  els.status.textContent = "自動推定を確認済みにしました。保存してQRを作れます。";
+  els.status.textContent = "地図候補を確認済みにしました。公開してQR地図・履歴・報告を生成できます。";
   renderTrace();
 };
 
@@ -487,6 +685,7 @@ els.adjustInference.onclick = () => {
   state.manualLaneOverride = true;
   state.inferenceAccepted = false;
   syncManualControlsFromInference();
+  els.advancedWork.open = true;
   els.advancedLanes.open = true;
   els.status.textContent = "詳細補正を開きました。必要なところだけ直してください。";
   renderTrace();
@@ -497,7 +696,7 @@ els.rerunInference.onclick = () => {
   state.manualLaneOverride = false;
   state.inferenceAccepted = false;
   els.advancedLanes.open = false;
-  els.status.textContent = "自動推定をやり直しました。";
+  els.status.textContent = "現在の候補線から規制形状を再推定しました。";
   renderTrace();
 };
 
@@ -539,7 +738,7 @@ els.documentFiles.addEventListener("change", () => {
 els.sampleDocument.onclick = () => {
   applyDraft(sampleDraft(), "サンプル資料");
   els.documentList.innerHTML = "<li>工事のお知らせサンプル</li><li>位置図サンプル</li><li>作業帯図サンプル</li>";
-  els.status.textContent = "資料の下書きを作りました。次は地図上で工事区間だけ確認してください。";
+  els.status.textContent = "サンプル資料から読み取り結果と候補区間を作りました。低信頼の地図候補だけ確認してください。";
 };
 
 document.querySelectorAll('input[name="affected"]').forEach((input) => {
@@ -580,7 +779,8 @@ function saveLocalPreview(payload) {
     restrictionType: payload.restrictionType,
     affectedUsers: payload.affectedUsers,
     passability: payload.passability,
-    source: "manual",
+    source: state.documentSourceName ? "document_intake" : "manual",
+    documentSourceName: state.documentSourceName || null,
     verificationStatus: "submitted",
     updatedAt: new Date().toISOString(),
     laneSpec: payload.laneSpec,
@@ -608,13 +808,13 @@ els.save.onclick = async () => {
     return;
   }
   els.save.disabled = true;
-  els.status.textContent = "施工区間を保存しています...";
+  els.status.textContent = "公開データを生成しています...";
   if (canUseLocalPreviewFallback()) {
     const restriction = saveLocalPreview(payload);
     state.savedId = restriction.id;
     showNoticeLink(
       restrictionToShareUrl("notice.html", restriction),
-      "共有できるQRページを作成しました。別のスマホでもこのリンクから確認できます。",
+      "公開しました。住民向けQR地図・変更履歴・発注者報告を同じ内容で作成しました。",
     );
     renderTrace();
     return;
@@ -630,10 +830,10 @@ els.save.onclick = async () => {
     state.savedId = body.id;
     showNoticeLink(
       `notice.html?id=${encodeURIComponent(body.id)}`,
-      "保存しました。同じ施工区間がQRページに表示されます。",
+      "公開しました。同じ施工区間がQR地図・変更履歴・発注者報告に反映されます。",
     );
   } catch (error) {
-    els.status.textContent = "保存に失敗しました。線は消していないので、内容を確認して再試行してください。";
+    els.status.textContent = "公開に失敗しました。候補線は消していないので、内容を確認して再試行してください。";
   } finally {
     renderTrace();
   }
