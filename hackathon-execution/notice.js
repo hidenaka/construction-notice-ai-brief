@@ -89,6 +89,25 @@ function displayLanePlan(restriction) {
   });
 }
 
+function renderLastMileImpact(restriction) {
+  const impact = restriction.lastMileImpact;
+  if (!impact || !impact.summary) return;
+  const field = document.getElementById("n-transit-field");
+  const summary = document.getElementById("n-transit-summary");
+  const list = document.getElementById("n-transit-list");
+  field.hidden = false;
+  summary.textContent = impact.summary.affectedAccessRouteCount > 0
+    ? "駅・停留所から歩く経路に影響候補があります"
+    : "駅・停留所から歩く経路への影響候補はありません";
+  list.replaceChildren();
+  (impact.affectedAccessRoutes || []).slice(0, 3).forEach((route) => {
+    const li = document.createElement("li");
+    const relation = route.relation === "crosses" ? "工事区間と交差" : "工事区間に近接";
+    li.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relation}（${route.distanceMeters}m）`;
+    list.append(li);
+  });
+}
+
 async function main() {
   const params = new URLSearchParams(location.search);
   const sharedData = params.get("data");
@@ -125,6 +144,7 @@ async function main() {
   }
   document.getElementById("n-users").textContent =
     (restriction.affectedUsers || []).map((u) => AFFECTED_USER_JA[u] || u).join("・");
+  renderLastMileImpact(restriction);
 
   const GSI = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
   const map = new maplibregl.Map({
@@ -148,6 +168,25 @@ async function main() {
         paint: {
           "fill-color": "#c83a2c",
           "fill-opacity": 0.52,
+        } });
+    }
+    if (restriction.lastMileImpact && restriction.lastMileImpact.geojson) {
+      map.addSource("last-mile-impact", { type: "geojson", data: restriction.lastMileImpact.geojson });
+      map.addLayer({ id: "last-mile-access-routes", type: "line", source: "last-mile-impact",
+        filter: ["==", ["get", "kind"], "access_route"],
+        paint: {
+          "line-color": ["match", ["get", "severity"], "high", "#8f1f18", "medium", "#c1841b", "#4d6a86"],
+          "line-width": ["match", ["get", "severity"], "high", 4, "medium", 3, 2],
+          "line-dasharray": [1, 1],
+          "line-opacity": 0.85,
+        } });
+      map.addLayer({ id: "last-mile-stops", type: "circle", source: "last-mile-impact",
+        filter: ["==", ["get", "kind"], "stop"],
+        paint: {
+          "circle-color": "#17466f",
+          "circle-radius": 5,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
         } });
     }
     map.addSource("restriction", { type: "geojson", data: { type: "Feature", geometry: restriction.geometry } });

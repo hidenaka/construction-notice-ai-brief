@@ -18,8 +18,8 @@ body { margin: 0; font-family: -apple-system, "Hiragino Sans", sans-serif; color
 .upload-box input { display: none; }
 .document-status { padding: 8px; border-radius: 8px; background: #fff7e6; color: #5d4211 !important; }
 .document-list { margin: 8px 0 0; padding-left: 18px; color: #34423b; font-size: 12px; }
-.workflow-panel, .readout-panel, .map-candidate-panel, .review-panel, .publish-panel, .owner-report-panel, .safety-panel, .validation-panel, .pilot-panel { margin: 12px 0; padding: 12px; border: 1px solid #d8e0da; border-radius: 8px; background: #fff; }
-.workflow-panel h2, .readout-panel h2, .map-candidate-panel h2, .review-panel h2, .publish-panel h2, .owner-report-panel h2, .safety-panel h2, .validation-panel h2, .pilot-panel h2 { margin-top: 0; }
+.workflow-panel, .readout-panel, .map-candidate-panel, .review-panel, .transit-impact-panel, .publish-panel, .owner-report-panel, .safety-panel, .validation-panel, .pilot-panel { margin: 12px 0; padding: 12px; border: 1px solid #d8e0da; border-radius: 8px; background: #fff; }
+.workflow-panel h2, .readout-panel h2, .map-candidate-panel h2, .review-panel h2, .transit-impact-panel h2, .publish-panel h2, .owner-report-panel h2, .safety-panel h2, .validation-panel h2, .pilot-panel h2 { margin-top: 0; }
 .workflow-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .workflow-steps li { display: grid; grid-template-columns: 78px 1fr; gap: 8px; min-height: 34px; align-items: center; padding: 7px 8px; border-radius: 8px; background: #f2f5f7; color: #34423b; font-size: 12px; }
 .workflow-steps strong { color: #17466f; font-size: 12px; }
@@ -39,6 +39,13 @@ body { margin: 0; font-family: -apple-system, "Hiragino Sans", sans-serif; color
 .review-list li { display: grid; grid-template-columns: 58px 1fr; gap: 8px; align-items: start; min-height: 34px; padding: 8px; border-radius: 8px; background: #fff7e6; color: #5d4211; font-size: 12px; line-height: 1.4; }
 .review-list strong { color: #a35f00; }
 .review-list .review-ok { display: block; background: #eef7ee; color: #245d46; }
+.transit-impact-panel { border-left: 4px solid #4d6a86; }
+.transit-summary { margin-top: 10px; padding: 9px 10px; border-radius: 8px; background: #eef5f0; color: #17466f; font-size: 12px; font-weight: 700; line-height: 1.45; }
+.transit-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.transit-list li { display: grid; grid-template-columns: 58px 1fr; gap: 8px; align-items: start; padding: 8px; border-radius: 8px; background: #f6f8fa; border: 1px solid #d6dce3; color: #34423b; font-size: 12px; line-height: 1.35; }
+.transit-list strong { color: #17466f; }
+.transit-list .severity-high strong { color: #8f1f18; }
+.transit-list .severity-medium strong { color: #a35f00; }
 .generated-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 10px 0; }
 .generated-card { min-height: 76px; padding: 9px 10px; border: 1px solid #d6dce3; border-radius: 8px; background: #f6f8fa; }
 .generated-card span { display: block; color: #4d6a86; font-size: 11px; font-weight: 800; }

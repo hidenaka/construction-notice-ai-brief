@@ -14,6 +14,7 @@ import {
   buildSafetyReview,
   buildValidationRecord,
 } from "./reporting.js";
+import { assessLastMileImpact } from "./last-mile-impact.js";
 import { restrictionToShareUrl } from "./share-link.js";
 
 const GSI = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
@@ -25,6 +26,70 @@ const RESTRICTION_LABELS = {
   alternating_one_way: "片側交互通行",
   bicycle_lane_closed: "自転車レーン規制",
   turn_restriction: "右左折規制",
+};
+const LAST_MILE_SAMPLE = {
+  stops: [
+    {
+      id: "odpt-station-tokyo-marunouchi",
+      name: "東京駅 丸の内中央口",
+      mode: "rail",
+      source: "odpt",
+      coordinates: [139.76505, 35.68155],
+      routeIds: ["JR-East", "TokyoMetro-Marunouchi"],
+    },
+    {
+      id: "gtfs-bus-marunouchi-north",
+      name: "丸の内北口バス停",
+      mode: "bus",
+      source: "gtfs",
+      coordinates: [139.76706, 35.68212],
+      routeIds: ["metrobus-marunouchi"],
+    },
+    {
+      id: "gtfs-bus-yaesu",
+      name: "八重洲口バス停",
+      mode: "bus",
+      source: "gtfs",
+      coordinates: [139.77005, 35.68108],
+      routeIds: ["metrobus-yaesu"],
+    },
+  ],
+  accessRoutes: [
+    {
+      id: "tokyo-station-to-office",
+      stopId: "odpt-station-tokyo-marunouchi",
+      destinationName: "周辺オフィス入口",
+      label: "東京駅丸の内中央口から周辺オフィス入口",
+      coordinates: [
+        [139.76505, 35.68155],
+        [139.76635, 35.68133],
+        [139.76715, 35.68147],
+        [139.76812, 35.68186],
+      ],
+    },
+    {
+      id: "bus-stop-to-crosswalk",
+      stopId: "gtfs-bus-marunouchi-north",
+      destinationName: "横断歩道",
+      label: "丸の内北口バス停から横断歩道",
+      coordinates: [
+        [139.76706, 35.68212],
+        [139.76718, 35.68145],
+        [139.76742, 35.68106],
+      ],
+    },
+    {
+      id: "yaesu-bus-to-building",
+      stopId: "gtfs-bus-yaesu",
+      destinationName: "八重洲側ビル入口",
+      label: "八重洲口バス停からビル入口",
+      coordinates: [
+        [139.77005, 35.68108],
+        [139.76922, 35.6812],
+        [139.76872, 35.68135],
+      ],
+    },
+  ],
 };
 const state = {
   drawing: false,
@@ -96,6 +161,8 @@ const els = {
   reportDeliverables: document.getElementById("report-deliverables"),
   reportHistory: document.getElementById("report-history"),
   reportInquiries: document.getElementById("report-inquiries"),
+  transitSummary: document.getElementById("transit-impact-summary"),
+  transitList: document.getElementById("transit-impact-list"),
   safetySummary: document.getElementById("safety-summary"),
   safetyList: document.getElementById("safety-list"),
   validationConfirmed: document.getElementById("validation-confirmed"),
@@ -523,9 +590,21 @@ function currentInference() {
   });
 }
 
+function currentLastMileImpact() {
+  if (state.coordinates.length < 2) return null;
+  return assessLastMileImpact({
+    construction: { type: "LineString", coordinates: state.coordinates },
+    stops: LAST_MILE_SAMPLE.stops,
+    accessRoutes: LAST_MILE_SAMPLE.accessRoutes,
+    stopThresholdMeters: 320,
+    routeThresholdMeters: 24,
+  });
+}
+
 function tracePayload() {
   const lanePlan = currentLanePlan();
   const laneSpec = currentLaneSpec();
+  const lastMileImpact = currentLastMileImpact();
   return {
     title: els.title.value.trim() || "道路工事",
     coordinates: state.coordinates,
@@ -541,6 +620,7 @@ function tracePayload() {
     autoInference: currentInference(),
     inferenceAccepted: state.inferenceAccepted,
     documentSourceName: state.documentSourceName || null,
+    lastMileImpact,
   };
 }
 
@@ -587,6 +667,7 @@ function renderTrace(options = {}) {
   if (map.getSource("lane-polygons")) map.getSource("lane-polygons").setData(lanePlan ? lanePlan.lanePolygons : emptyFeatureCollection());
   if (map.getSource("closure-polygons")) map.getSource("closure-polygons").setData(lanePlan ? lanePlan.closurePolygons : emptyFeatureCollection());
   if (map.getSource("lane-centerlines")) map.getSource("lane-centerlines").setData(lanePlan ? lanePlan.laneCenterlines : emptyFeatureCollection());
+  if (map.getSource("last-mile-impact")) map.getSource("last-mile-impact").setData(currentLastMileImpact()?.geojson || emptyFeatureCollection());
   if (map.getSource("trace-line")) map.getSource("trace-line").setData(line);
   if (map.getSource("trace-points")) map.getSource("trace-points").setData(points);
   if (!options.keepMarkers) renderMarkers();
@@ -596,6 +677,7 @@ function renderTrace(options = {}) {
   renderLanePicker(lanePlan);
   renderInference();
   renderProfileNote();
+  renderLastMileImpact();
   els.coordinateList.innerHTML = state.coordinates.map(([lng, lat], index) =>
     `<li>${index + 1}: ${lng.toFixed(7)}, ${lat.toFixed(7)}</li>`).join("");
   const hasLine = state.coordinates.length >= 2;
@@ -608,6 +690,45 @@ function renderTrace(options = {}) {
   els.rerunInference.disabled = !hasLine;
   if (!hasLine) els.noticeLink.hidden = true;
   renderDocumentPanels();
+}
+
+function severityLabel(value) {
+  const labels = { high: "高", medium: "中", low: "低" };
+  return labels[value] || value || "-";
+}
+
+function relationLabel(value) {
+  const labels = { crosses: "交差", nearby: "近接" };
+  return labels[value] || value || "-";
+}
+
+function renderLastMileImpact() {
+  const impact = currentLastMileImpact();
+  els.transitList.replaceChildren();
+  if (!impact) {
+    els.transitSummary.textContent = "施工区間が2点以上になると、徒歩アクセス影響を確認します。";
+    const li = document.createElement("li");
+    li.textContent = "ODPT/GTFSの駅・停留所データを、工事区間の周辺確認に接続する想定です。";
+    els.transitList.append(li);
+    return;
+  }
+  els.transitSummary.textContent = impact.summary.sentence;
+  if (impact.affectedAccessRoutes.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "影響候補の徒歩アクセス経路はありません。";
+    els.transitList.append(li);
+    return;
+  }
+  impact.affectedAccessRoutes.slice(0, 4).forEach((route) => {
+    const li = document.createElement("li");
+    li.className = `severity-${route.severity}`;
+    const label = document.createElement("strong");
+    const text = document.createElement("span");
+    label.textContent = severityLabel(route.severity);
+    text.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relationLabel(route.relation)} / 工事区間から${route.distanceMeters}m / ${route.stop?.name || route.stopId || "停留所"}`;
+    li.append(label, text);
+    els.transitList.append(li);
+  });
 }
 
 function emptyFeatureCollection() {
@@ -780,6 +901,19 @@ map.on("load", () => {
     },
   });
   map.addSource("trace-line", { type: "geojson", data: lineFeature() });
+  map.addSource("last-mile-impact", { type: "geojson", data: emptyFeatureCollection() });
+  map.addLayer({
+    id: "last-mile-access-routes",
+    type: "line",
+    source: "last-mile-impact",
+    filter: ["==", ["get", "kind"], "access_route"],
+    paint: {
+      "line-color": ["match", ["get", "severity"], "high", "#8f1f18", "medium", "#c1841b", "#4d6a86"],
+      "line-width": ["match", ["get", "severity"], "high", 4, "medium", 3, 2],
+      "line-dasharray": [1, 1],
+      "line-opacity": 0.85,
+    },
+  });
   map.addLayer({
     id: "trace-line",
     type: "line",
@@ -787,6 +921,18 @@ map.on("load", () => {
     paint: { "line-color": "#c83a2c", "line-width": 7, "line-opacity": 0.9 },
   });
   map.addSource("trace-points", { type: "geojson", data: pointFeatures() });
+  map.addLayer({
+    id: "last-mile-stops",
+    type: "circle",
+    source: "last-mile-impact",
+    filter: ["==", ["get", "kind"], "stop"],
+    paint: {
+      "circle-color": "#17466f",
+      "circle-radius": 5,
+      "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 2,
+    },
+  });
   map.addLayer({
     id: "trace-point-labels",
     type: "symbol",
@@ -957,6 +1103,7 @@ function saveLocalPreview(payload) {
     updatedAt: new Date().toISOString(),
     laneSpec: payload.laneSpec,
     laneSummary: payload.laneSummary,
+    lastMileImpact: payload.lastMileImpact,
   };
   localStorage.setItem(`construction-notice:${id}`, JSON.stringify({ restriction }));
   return restriction;
