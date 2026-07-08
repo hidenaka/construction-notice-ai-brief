@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>施工区間トレーサー | おさんぽセーフティ</title>
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="trace.css">
+</head><body>
+<header class="trace-header">
+  <div>
+    <h1>施工区間トレーサー</h1>
+    <p>申請書・位置図・作業帯図の区間を、地図上の正確な線として保存します。</p>
+  </div>
+  <a href="./" class="back-link">リスク地図へ戻る</a>
+</header>
+
+<main class="trace-shell">
+  <section class="trace-form" aria-label="工事情報">
+    <section class="document-intake" aria-label="既存資料の読み取り">
+      <h2>既存資料から作成</h2>
+      <p>申請書・位置図・作業帯図・チラシ原稿を入れると、周知ページの下書きを作ります。</p>
+      <label class="upload-box">
+        <span>資料を選択</span>
+        <input id="document-files" type="file" multiple accept="image/*,application/pdf,text/plain,application/json">
+      </label>
+      <button id="sample-document" type="button" class="secondary">サンプル資料で確認</button>
+      <p id="document-status" class="document-status">まだ資料は読み込まれていません。</p>
+      <ul id="document-list" class="document-list"></ul>
+    </section>
+
+    <details class="draft-fields" id="draft-fields">
+      <summary>読み取り結果の補正</summary>
+      <label>工事名 <input id="trace-title" value="○○通り 水道工事"></label>
+      <div class="two-col">
+        <label>開始日 <input id="trace-start" type="date"></label>
+        <label>終了日 <input id="trace-end" type="date"></label>
+      </div>
+      <label>時間帯 <input id="trace-time" placeholder="09:00-17:00"></label>
+      <label>規制種別
+        <select id="trace-type">
+          <option value="lane_closure">車線規制</option>
+          <option value="sidewalk_closed">歩道通行止め</option>
+          <option value="sidewalk_narrowed">歩道狭小</option>
+          <option value="road_closed">通行止め</option>
+          <option value="alternating_one_way">片側交互通行</option>
+          <option value="bicycle_lane_closed">自転車レーン規制</option>
+          <option value="turn_restriction">右左折規制</option>
+        </select>
+      </label>
+    </details>
+    <section class="auto-inference" aria-label="自動推定">
+      <h2>自動推定</h2>
+      <p class="inference-copy" id="inference-summary">施工区間を2点以上引くと、規制形状を自動で作ります。</p>
+      <p class="inference-reason" id="inference-reason">車線数・幅・テーパーは画面側で推定します。作業者は合っているかだけ確認します。</p>
+      <div class="inference-actions">
+        <button id="accept-inference" type="button" disabled>合っている</button>
+        <button id="adjust-inference" type="button" disabled>少し直す</button>
+        <button id="rerun-inference" type="button" disabled>やり直す</button>
+      </div>
+    </section>
+
+    <details class="advanced-lanes" id="advanced-lanes">
+      <summary>詳細補正</summary>
+      <fieldset>
+        <legend>自動推定の補正</legend>
+        <label>描画方向の車線数
+          <select id="forward-lanes">
+            <option value="0">なし</option>
+            <option value="1" selected>1車線</option>
+            <option value="2">2車線</option>
+            <option value="3">3車線</option>
+            <option value="4">4車線</option>
+          </select>
+        </label>
+        <label>反対方向の車線数
+          <select id="opposite-lanes">
+            <option value="0">なし</option>
+            <option value="1" selected>1車線</option>
+            <option value="2">2車線</option>
+            <option value="3">3車線</option>
+            <option value="4">4車線</option>
+          </select>
+        </label>
+        <label>車線幅
+          <select id="lane-width">
+            <option value="3">3.0m</option>
+            <option value="3.25" selected>3.25m</option>
+            <option value="3.5">3.5m</option>
+            <option value="4">4.0m</option>
+          </select>
+        </label>
+        <label>形状
+          <select id="lane-profile-mode">
+            <option value="uniform" selected>標準</option>
+            <option value="asymmetric">片側だけ幅が違う</option>
+            <option value="lane_drop">途中で車線減少</option>
+            <option value="taper">テーパー規制</option>
+            <option value="intersection">交差点付近</option>
+          </select>
+        </label>
+        <div class="two-col">
+          <label>描画方向幅
+            <select id="forward-lane-width">
+              <option value="3">3.0m</option>
+              <option value="3.25" selected>3.25m</option>
+              <option value="3.5">3.5m</option>
+              <option value="4">4.0m</option>
+            </select>
+          </label>
+          <label>反対方向幅
+            <select id="opposite-lane-width">
+              <option value="2.75">2.75m</option>
+              <option value="3">3.0m</option>
+              <option value="3.25" selected>3.25m</option>
+              <option value="3.5">3.5m</option>
+              <option value="4">4.0m</option>
+            </select>
+          </label>
+        </div>
+        <div class="two-col">
+          <label>規制開始
+            <input id="closure-start" type="number" min="0" max="100" step="5" value="0">
+          </label>
+          <label>規制終了
+            <input id="closure-end" type="number" min="0" max="100" step="5" value="100">
+          </label>
+        </div>
+        <p class="lane-profile-note" id="lane-profile-note">標準: 全区間を同じ車線構成で描画します。</p>
+        <div class="lane-picker" id="lane-picker" aria-label="規制する車線"></div>
+      </fieldset>
+    </details>
+    <fieldset class="affected-fieldset">
+      <legend>影響対象</legend>
+      <label><input type="checkbox" name="affected" value="pedestrian" checked> 歩行者</label>
+      <label><input type="checkbox" name="affected" value="wheelchair" checked> 車いす</label>
+      <label><input type="checkbox" name="affected" value="stroller" checked> ベビーカー</label>
+      <label><input type="checkbox" name="affected" value="bicycle"> 自転車</label>
+      <label><input type="checkbox" name="affected" value="car"> 車</label>
+      <label><input type="checkbox" name="affected" value="delivery"> 配送</label>
+    </fieldset>
+
+    <div class="trace-stats">
+      <div><span>頂点</span><strong id="point-count">0</strong></div>
+      <div><span>距離</span><strong id="trace-distance">0m</strong></div>
+    </div>
+    <p id="trace-status" class="trace-status" role="status" aria-live="polite">「線を引く」を押して、地図上で施工区間をクリックしてください。</p>
+    <div class="trace-actions">
+      <button id="draw-toggle">線を引く</button>
+      <button id="undo-point" disabled>戻す</button>
+      <button id="clear-trace" disabled>全削除</button>
+      <button id="save-trace" disabled>保存してQRへ</button>
+    </div>
+    <button id="copy-geojson" class="secondary" disabled>GeoJSONをコピー</button>
+    <a id="notice-link" class="notice-link" hidden target="_blank" rel="noopener">QRページを開く</a>
+    <h2>座標確認</h2>
+    <ol id="coordinate-list" class="coordinate-list"></ol>
+  </section>
+
+  <section class="trace-map-wrap" aria-label="施工区間地図">
+    <div id="trace-map"></div>
+    <div class="map-help">赤線が保存される施工区間です。赤い点はドラッグで微調整できます。</div>
+  </section>
+</main>
+
+<footer class="trace-footer">AI/OCRの読み取り結果は下書きです。公開に使う施工区間は、この画面で人間が確定した座標を正とします。</footer>
+<script src="vendor/maplibre-gl.js"></script>
+<script type="module" src="trace.js"></script>
+</body></html>
