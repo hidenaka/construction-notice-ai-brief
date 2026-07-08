@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>工事お知らせAI | ハッカソン実行版</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans",sans-serif;color:#17201b;background:#eef2ef;line-height:1.65}.hero{padding:22px 18px;background:#245d46;color:#fff}.hero h1{margin:0 0 8px;font-size:26px;line-height:1.25;letter-spacing:0}.hero p{margin:0;max-width:760px;font-size:14px;opacity:.94}.wrap{max-width:980px;margin:0 auto;padding:16px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.btn{display:block;min-height:48px;padding:12px 14px;border-radius:8px;text-align:center;text-decoration:none;font-weight:800}.primary{background:#17466f;color:#fff}.secondary{background:#fff;color:#17466f;border:1px solid #cfd8e3}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:14px;border:1px solid #d8e0da;border-radius:8px;background:#fff}.card h2{margin:0 0 8px;font-size:17px}.card ul,.card ol{margin:0;padding-left:20px}.card li{margin:5px 0}.tag{display:inline-block;margin:0 0 8px;padding:3px 8px;border-radius:999px;background:#fff7e6;color:#7a4e00;font-size:12px;font-weight:800}.value{font-size:22px;font-weight:900;color:#8f1f18}.note{font-size:12px;color:#5a655e}.full{grid-column:1/-1}.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi div{padding:10px;border-radius:8px;background:#f6f8fa;border:1px solid #e1e5db}.kpi span{display:block;font-size:11px;color:#66756d}.kpi strong{display:block;font-size:16px}@media(max-width:720px){.grid,.actions,.kpi{grid-template-columns:1fr}.hero h1{font-size:23px}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<section class="hero">
+  <h1>工事お知らせAI</h1>
+  <p>既存資料から、確認済みの工事周知を作る。OCR、車線、QR、ODPT、発注者報告を別々に見せず、現場が既に持つ資料から住民向け周知と発注者報告までつなげるデモです。</p>
+</section>
+<main class="wrap">
+  <div class="actions">
+    <a class="btn primary" href="trace.html">デモを開く</a>
+    <a class="btn secondary" href="notice.html?data=eJyrVipLLSrOzM9TsqpWMlTSUUrMy0xOVdJRSs1NLKpU0gGJJTinJJakKqQmlShZ6hoam5ooGmlbGhkYWALFynJzUvOSgWLFpUX5BUBBCUpmRkZqTk5pUWqlUq0OABWqJYE">住民向けQRページ例</a>
+  </div>
+
+  <section class="grid">
+    <article class="card full">
+      <span class="tag">一本化したデモ</span>
+      <h2>見せる体験</h2>
+      <ol>
+        <li>既存資料を入れる。</li>
+        <li>AI/OCRが下書きと出典を出す。</li>
+        <li>低信頼・要確認だけ人が確認する。</li>
+        <li>確認済みデータからQR、A4、変更履歴、発注者報告を同時に作る。</li>
+      </ol>
+    </article>
+
+    <article class="card">
+      <span class="tag">事業者価値</span>
+      <h2>発注者報告を売り物にする</h2>
+      <ul>
+        <li>公開日時</li>
+        <li>変更履歴</li>
+        <li>確認者</li>
+        <li>配布物</li>
+        <li>閲覧数</li>
+        <li>問い合わせカテゴリ</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <span class="tag">公共価値</span>
+      <h2>住民・通行人に伝える</h2>
+      <ul>
+        <li>今日ここを通れるか</li>
+        <li>何時に影響があるか</li>
+        <li>地図上の正確な工事区間</li>
+        <li>車線・歩道・迂回の影響</li>
+        <li>最終更新と変更履歴</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <span class="tag">誤情報対策</span>
+      <h2>AIは公開しない</h2>
+      <p>AI/OCRは下書き、出典、信頼度、要確認理由を出すだけ。出典なし、低信頼、未読取、変更後の未承認は公開を止めます。</p>
+    </article>
+
+    <article class="card">
+      <span class="tag">検証</span>
+      <h2>今やるべき検証</h2>
+      <p>実書類10件で、どの項目が出典付きで抽出でき、どこが要確認になり、修正に何分かかるかを測ります。</p>
+    </article>
+
+    <article class="card full">
+      <span class="tag">有料パイロット</span>
+      <h2>工事周知 半自動代行パック</h2>
+      <p class="value">5万〜8万円/現場</p>
+      <p>最初からSaaSを売らず、実書類を預かってQR、A4、変更履歴、発注者報告を納品する小さな有料案件として始めます。</p>
+      <div class="kpi">
+        <div><span>買い手</span><strong>道路・設備工事</strong></div>
+        <div><span>入口</span><strong>既存資料</strong></div>
+        <div><span>納品</span><strong>QR/A4/報告</strong></div>
+        <div><span>差別化</span><strong>確認履歴</strong></div>
+      </div>
+    </article>
+
+    <article class="card full">
+      <span class="tag">ODPT</span>
+      <h2>ハッカソンでの位置づけ</h2>
+      <p>公共交通オープンデータは主役ではなく、駅・バス停から目的地までの徒歩アクセス影響を見るラストワンマイル接続として使います。運行変更の公式代替とは言いません。</p>
+      <p class="note">公共交通オープンデータチャレンジ2026は、公共交通オープンデータ活用が必須で、社会課題解決、オープンデータ活用インパクト、技術完成度、UI/UXを重視します。</p>
+    </article>
+  </section>
+</main>
+</body>
+</html>

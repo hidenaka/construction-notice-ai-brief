@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>既存資料から作成 | おさんぽセーフティ</title>
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="trace.css">
+</head><body>
+<header class="trace-header">
+  <div>
+    <h1>既存資料からQR地図・報告を作成</h1>
+    <p>申請書・位置図・作業帯図・チラシ原稿を使い、住民向け地図・変更履歴・発注者報告を同じ元データから作ります。</p>
+  </div>
+  <a href="./" class="back-link">リスク地図へ戻る</a>
+</header>
+
+<main class="trace-shell">
+  <section class="trace-form" aria-label="工事情報">
+    <section class="document-intake" aria-label="既存資料の読み取り">
+      <p class="step-label">STEP 1</p>
+      <h2>既存資料を入れる</h2>
+      <p>いつもの申請書・位置図・作業帯図・チラシ原稿を入れるだけです。新しい入力用書類は増やしません。</p>
+      <label class="upload-box">
+        <span>資料を選択</span>
+        <input id="document-files" type="file" multiple accept="image/*,application/pdf,text/plain,application/json">
+      </label>
+      <button id="sample-document" type="button" class="secondary">サンプル資料で確認</button>
+      <p id="document-status" class="document-status">まだ資料は読み込まれていません。</p>
+      <ul id="document-list" class="document-list"></ul>
+    </section>
+
+    <section class="workflow-panel" aria-label="作成の流れ">
+      <h2>作成の流れ</h2>
+      <ol class="workflow-steps">
+        <li><strong>資料投入</strong><span>既存資料だけを使う</span></li>
+        <li><strong>読取確認</strong><span>工事名・工期・規制を確認</span></li>
+        <li><strong>候補確認</strong><span>怪しい地図候補だけ直す</span></li>
+        <li><strong>公開生成</strong><span>QR地図・履歴・報告を同時作成</span></li>
+      </ol>
+    </section>
+
+    <section class="readout-panel" aria-label="読み取り結果">
+      <p class="step-label">STEP 2</p>
+      <h2>読み取り結果</h2>
+      <dl class="readout-grid" id="readout-grid">
+        <div><dt>工事名</dt><dd id="readout-title">未読取</dd></div>
+        <div><dt>工期</dt><dd id="readout-dates">未読取</dd></div>
+        <div><dt>時間帯</dt><dd id="readout-time">未読取</dd></div>
+        <div><dt>規制</dt><dd id="readout-type">未読取</dd></div>
+      </dl>
+      <p class="readout-note" id="readout-note">資料を入れると、周知に必要な項目を既存資料から拾います。</p>
+    </section>
+
+    <section class="map-candidate-panel" aria-label="地図候補">
+      <p class="step-label">STEP 3</p>
+      <h2>地図候補</h2>
+      <div class="candidate-card" id="map-candidate-card">
+        <span class="confidence-badge" id="map-candidate-status">未作成</span>
+        <strong id="map-candidate-title">資料を入れると候補区間を表示します</strong>
+        <p id="map-candidate-detail">座標付き資料や保存済み候補がある場合は、区間線を地図に載せます。合っている場合は確認だけで進めます。</p>
+      </div>
+      <div class="inference-actions">
+        <button id="accept-inference" type="button" disabled>候補は合っている</button>
+        <button id="adjust-inference" type="button" disabled>詳細補正を開く</button>
+        <button id="rerun-inference" type="button" disabled>候補を再推定</button>
+      </div>
+      <p id="trace-status" class="trace-status" role="status" aria-live="polite">資料を入れると、読み取り結果と地図候補を確認できます。</p>
+    </section>
+
+    <section class="review-panel" aria-label="低信頼だけ確認">
+      <p class="step-label">CHECK</p>
+      <h2>低信頼だけ確認</h2>
+      <ul class="review-list" id="review-list">
+        <li>資料を入れると、未読取または信頼度が低い項目だけ表示します。</li>
+      </ul>
+    </section>
+
+    <details class="draft-fields" id="draft-fields">
+      <summary>読み取り結果を手で補正</summary>
+      <label>工事名 <input id="trace-title" value="○○通り 水道工事"></label>
+      <div class="two-col">
+        <label>開始日 <input id="trace-start" type="date"></label>
+        <label>終了日 <input id="trace-end" type="date"></label>
+      </div>
+      <label>時間帯 <input id="trace-time" placeholder="09:00-17:00"></label>
+      <label>規制種別
+        <select id="trace-type">
+          <option value="lane_closure">車線規制</option>
+          <option value="sidewalk_closed">歩道通行止め</option>
+          <option value="sidewalk_narrowed">歩道狭小</option>
+          <option value="road_closed">通行止め</option>
+          <option value="alternating_one_way">片側交互通行</option>
+          <option value="bicycle_lane_closed">自転車レーン規制</option>
+          <option value="turn_restriction">右左折規制</option>
+        </select>
+      </label>
+    </details>
+
+    <fieldset class="affected-fieldset">
+      <legend>影響対象（読み取り結果）</legend>
+      <label><input type="checkbox" name="affected" value="pedestrian" checked> 歩行者</label>
+      <label><input type="checkbox" name="affected" value="wheelchair" checked> 車いす</label>
+      <label><input type="checkbox" name="affected" value="stroller" checked> ベビーカー</label>
+      <label><input type="checkbox" name="affected" value="bicycle"> 自転車</label>
+      <label><input type="checkbox" name="affected" value="car"> 車</label>
+      <label><input type="checkbox" name="affected" value="delivery"> 配送</label>
+    </fieldset>
+
+    <section class="publish-panel" aria-label="公開時に生成されるもの">
+      <p class="step-label">STEP 4</p>
+      <h2>公開すると同時に生成されるもの</h2>
+      <p class="publish-copy">読み取った同じ元データから、住民向けQR地図・変更履歴・発注者報告をまとめて作ります。</p>
+      <div class="generated-grid">
+        <article class="generated-card" id="generated-notice">
+          <span>住民向けQR/地図</span>
+          <strong>周知ページ</strong>
+          <p>工期・時間帯・通行影響を地図で表示</p>
+        </article>
+        <article class="generated-card" id="generated-history">
+          <span>変更履歴</span>
+          <strong>差分記録</strong>
+          <p>資料読取、補正、公開の履歴を保持</p>
+        </article>
+        <article class="generated-card" id="generated-report">
+          <span>発注者報告</span>
+          <strong>確認用サマリー</strong>
+          <p>工事情報・区間・公開URLを同じ内容で出力</p>
+        </article>
+      </div>
+      <button id="save-trace" disabled>公開してQR/履歴/報告を生成</button>
+      <a id="notice-link" class="notice-link" hidden target="_blank" rel="noopener">住民向けページを開く</a>
+    </section>
+
+    <section class="owner-report-panel" aria-label="発注者報告">
+      <p class="step-label">OUTPUT</p>
+      <h2>発注者報告プレビュー</h2>
+      <p class="report-copy">新しい報告用入力は作りません。公開した同じ内容から、周知実施・変更・確認状況を1枚にまとめます。</p>
+      <dl class="report-grid">
+        <div><dt>状態</dt><dd id="report-status">未作成</dd></div>
+        <div><dt>公開日時</dt><dd id="report-published-at">未公開</dd></div>
+        <div><dt>確認者</dt><dd id="report-confirmed-by">未設定</dd></div>
+        <div><dt>閲覧数</dt><dd id="report-views">デモ値 0</dd></div>
+      </dl>
+      <div class="report-block">
+        <h3>配布物</h3>
+        <ul id="report-deliverables" class="compact-list"></ul>
+      </div>
+      <div class="report-block">
+        <h3>変更履歴</h3>
+        <ol id="report-history" class="compact-list numbered"></ol>
+      </div>
+      <div class="report-block">
+        <h3>問い合わせカテゴリ</h3>
+        <ul id="report-inquiries" class="tag-list"></ul>
+      </div>
+    </section>
+
+    <section class="safety-panel" aria-label="誤情報対策">
+      <p class="step-label">GUARDRAIL</p>
+      <h2>誤情報対策</h2>
+      <p class="report-copy">AI/OCRは下書きだけです。出典・信頼度・要確認・承認を残し、変更時は再承認待ちにします。</p>
+      <div class="safety-summary" id="safety-summary"></div>
+      <ul id="safety-list" class="safety-list"></ul>
+    </section>
+
+    <section class="validation-panel" aria-label="実書類10件検証">
+      <p class="step-label">VALIDATION</p>
+      <h2>実書類10件の検証</h2>
+      <p class="report-copy">価値を上げる次の検証は、機能追加ではなく「実書類からどこまで自動抽出できたか」を測ることです。</p>
+      <dl class="report-grid">
+        <div><dt>確認済み</dt><dd id="validation-confirmed">0項目</dd></div>
+        <div><dt>要確認</dt><dd id="validation-needs">0項目</dd></div>
+        <div><dt>未読取</dt><dd id="validation-blocked">0項目</dd></div>
+        <div><dt>平均信頼度</dt><dd id="validation-confidence">0%</dd></div>
+      </dl>
+      <button id="copy-validation" type="button" class="secondary" disabled>検証レコードをコピー</button>
+    </section>
+
+    <section class="pilot-panel" aria-label="有料パイロット商品">
+      <p class="step-label">PILOT</p>
+      <h2 id="pilot-name">工事周知 半自動代行パック</h2>
+      <p class="pilot-price" id="pilot-price">5万〜8万円/現場</p>
+      <p class="report-copy">SaaSを先に売るのではなく、QR、A4、変更履歴、発注者報告まで納品する小さな有料案件として始めます。</p>
+      <ul id="pilot-approval" class="compact-list"></ul>
+    </section>
+
+    <details class="advanced-work" id="advanced-work">
+      <summary>詳細補正（区間線・車線・GeoJSON）</summary>
+      <p class="advanced-copy" id="inference-summary">候補区間がない場合や読み取り結果が怪しい場合だけ、地図上で補正します。</p>
+      <p class="inference-reason" id="inference-reason">車線数・幅・テーパーは自動推定します。通常は合っているかの確認だけで進めます。</p>
+
+      <details class="advanced-lanes" id="advanced-lanes">
+        <summary>車線・規制範囲を補正</summary>
+        <fieldset>
+          <legend>自動推定の補正</legend>
+          <label>描画方向の車線数
+            <select id="forward-lanes">
+              <option value="0">なし</option>
+              <option value="1" selected>1車線</option>
+              <option value="2">2車線</option>
+              <option value="3">3車線</option>
+              <option value="4">4車線</option>
+            </select>
+          </label>
+          <label>反対方向の車線数
+            <select id="opposite-lanes">
+              <option value="0">なし</option>
+              <option value="1" selected>1車線</option>
+              <option value="2">2車線</option>
+              <option value="3">3車線</option>
+              <option value="4">4車線</option>
+            </select>
+          </label>
+          <label>車線幅
+            <select id="lane-width">
+              <option value="3">3.0m</option>
+              <option value="3.25" selected>3.25m</option>
+              <option value="3.5">3.5m</option>
+              <option value="4">4.0m</option>
+            </select>
+          </label>
+          <label>形状
+            <select id="lane-profile-mode">
+              <option value="uniform" selected>標準</option>
+              <option value="asymmetric">片側だけ幅が違う</option>
+              <option value="lane_drop">途中で車線減少</option>
+              <option value="taper">テーパー規制</option>
+              <option value="intersection">交差点付近</option>
+            </select>
+          </label>
+          <div class="two-col">
+            <label>描画方向幅
+              <select id="forward-lane-width">
+                <option value="3">3.0m</option>
+                <option value="3.25" selected>3.25m</option>
+                <option value="3.5">3.5m</option>
+                <option value="4">4.0m</option>
+              </select>
+            </label>
+            <label>反対方向幅
+              <select id="opposite-lane-width">
+                <option value="2.75">2.75m</option>
+                <option value="3">3.0m</option>
+                <option value="3.25" selected>3.25m</option>
+                <option value="3.5">3.5m</option>
+                <option value="4">4.0m</option>
+              </select>
+            </label>
+          </div>
+          <div class="two-col">
+            <label>規制開始
+              <input id="closure-start" type="number" min="0" max="100" step="5" value="0">
+            </label>
+            <label>規制終了
+              <input id="closure-end" type="number" min="0" max="100" step="5" value="100">
+            </label>
+          </div>
+          <p class="lane-profile-note" id="lane-profile-note">標準: 全区間を同じ車線構成で描画します。</p>
+          <div class="lane-picker" id="lane-picker" aria-label="規制する車線"></div>
+        </fieldset>
+      </details>
+
+      <div class="trace-stats">
+        <div><span>候補点</span><strong id="point-count">0</strong></div>
+        <div><span>距離</span><strong id="trace-distance">0m</strong></div>
+      </div>
+      <div class="trace-actions">
+        <button id="draw-toggle">地図上で区間を補正</button>
+        <button id="undo-point" disabled>戻す</button>
+        <button id="clear-trace" disabled>候補を削除</button>
+      </div>
+      <button id="copy-geojson" class="secondary" disabled>GeoJSONをコピー</button>
+      <h2>座標確認</h2>
+      <ol id="coordinate-list" class="coordinate-list"></ol>
+    </details>
+  </section>
+
+  <section class="trace-map-wrap" aria-label="施工区間地図">
+    <div id="trace-map"></div>
+    <div class="map-help">資料から作った候補区間を赤線で表示します。怪しい場合だけ点をドラッグして補正します。</div>
+  </section>
+</main>
+
+<footer class="trace-footer">AI/OCRの読み取り結果は下書きです。低信頼の項目だけ確認し、公開した内容を住民向け地図・変更履歴・発注者報告の共通データとして扱います。</footer>
+<script src="vendor/maplibre-gl.js"></script>
+<script type="module" src="trace.js"></script>
+</body></html>
