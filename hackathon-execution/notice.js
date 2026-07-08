@@ -97,13 +97,18 @@ function renderLastMileImpact(restriction) {
   const list = document.getElementById("n-transit-list");
   field.hidden = false;
   summary.textContent = impact.summary.affectedAccessRouteCount > 0
-    ? "駅・停留所から歩く経路に影響候補があります"
+    ? "駅・停留所の近くに工事影響候補があります"
     : "駅・停留所から歩く経路への影響候補はありません";
   list.replaceChildren();
   (impact.affectedAccessRoutes || []).slice(0, 3).forEach((route) => {
     const li = document.createElement("li");
-    const relation = route.relation === "crosses" ? "工事区間と交差" : "工事区間に近接";
-    li.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relation}（${route.distanceMeters}m）`;
+    const relation = route.relation === "crosses"
+      ? "工事区間と交差"
+      : route.relation === "nearby_stop" ? "工事区間に近い停留所" : "工事区間に近接";
+    const distance = route.distanceToConstructionMeters !== undefined
+      ? `停留所から約${Math.round(route.distanceToConstructionMeters)}m`
+      : `${route.distanceMeters}m`;
+    li.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relation}（${distance}）`;
     list.append(li);
   });
 }

@@ -14,6 +14,11 @@ import {
   buildSafetyReview,
   buildValidationRecord,
 } from "./reporting.js";
+import {
+  buildGtfsLastMileInputs,
+  fetchGtfsStopsGeojson,
+  GTFS_DATA_REPOSITORY_FEED,
+} from "./gtfs-data-source.js";
 import { assessLastMileImpact } from "./last-mile-impact.js";
 import { restrictionToShareUrl } from "./share-link.js";
 
@@ -27,70 +32,6 @@ const RESTRICTION_LABELS = {
   bicycle_lane_closed: "自転車レーン規制",
   turn_restriction: "右左折規制",
 };
-const LAST_MILE_SAMPLE = {
-  stops: [
-    {
-      id: "odpt-station-tokyo-marunouchi",
-      name: "東京駅 丸の内中央口",
-      mode: "rail",
-      source: "odpt",
-      coordinates: [139.76505, 35.68155],
-      routeIds: ["JR-East", "TokyoMetro-Marunouchi"],
-    },
-    {
-      id: "gtfs-bus-marunouchi-north",
-      name: "丸の内北口バス停",
-      mode: "bus",
-      source: "gtfs",
-      coordinates: [139.76706, 35.68212],
-      routeIds: ["metrobus-marunouchi"],
-    },
-    {
-      id: "gtfs-bus-yaesu",
-      name: "八重洲口バス停",
-      mode: "bus",
-      source: "gtfs",
-      coordinates: [139.77005, 35.68108],
-      routeIds: ["metrobus-yaesu"],
-    },
-  ],
-  accessRoutes: [
-    {
-      id: "tokyo-station-to-office",
-      stopId: "odpt-station-tokyo-marunouchi",
-      destinationName: "周辺オフィス入口",
-      label: "東京駅丸の内中央口から周辺オフィス入口",
-      coordinates: [
-        [139.76505, 35.68155],
-        [139.76635, 35.68133],
-        [139.76715, 35.68147],
-        [139.76812, 35.68186],
-      ],
-    },
-    {
-      id: "bus-stop-to-crosswalk",
-      stopId: "gtfs-bus-marunouchi-north",
-      destinationName: "横断歩道",
-      label: "丸の内北口バス停から横断歩道",
-      coordinates: [
-        [139.76706, 35.68212],
-        [139.76718, 35.68145],
-        [139.76742, 35.68106],
-      ],
-    },
-    {
-      id: "yaesu-bus-to-building",
-      stopId: "gtfs-bus-yaesu",
-      destinationName: "八重洲側ビル入口",
-      label: "八重洲口バス停からビル入口",
-      coordinates: [
-        [139.77005, 35.68108],
-        [139.76922, 35.6812],
-        [139.76872, 35.68135],
-      ],
-    },
-  ],
-};
 const state = {
   drawing: false,
   coordinates: [],
@@ -102,6 +43,9 @@ const state = {
   documentDraft: null,
   documentSourceName: "",
   mapCandidate: null,
+  gtfsStopsGeojson: null,
+  gtfsLoadStatus: "loading",
+  gtfsLoadMessage: "GTFSデータリポジトリの実データを読み込んでいます。",
 };
 
 const els = {
@@ -592,13 +536,31 @@ function currentInference() {
 
 function currentLastMileImpact() {
   if (state.coordinates.length < 2) return null;
-  return assessLastMileImpact({
+  if (!state.gtfsStopsGeojson) return null;
+  const inputs = buildGtfsLastMileInputs({
+    stopsGeojson: state.gtfsStopsGeojson,
+    feed: GTFS_DATA_REPOSITORY_FEED,
     construction: { type: "LineString", coordinates: state.coordinates },
-    stops: LAST_MILE_SAMPLE.stops,
-    accessRoutes: LAST_MILE_SAMPLE.accessRoutes,
-    stopThresholdMeters: 320,
-    routeThresholdMeters: 24,
+    maxDistanceMeters: 650,
+    maxAccessRoutes: 8,
   });
+  const impact = assessLastMileImpact({
+    construction: { type: "LineString", coordinates: state.coordinates },
+    stops: inputs.stops,
+    accessRoutes: inputs.accessRoutes,
+    stopThresholdMeters: 650,
+    routeThresholdMeters: 30,
+  });
+  return {
+    ...impact,
+    dataSource: {
+      status: state.gtfsLoadStatus,
+      message: state.gtfsLoadMessage,
+      sourceLabel: inputs.sourceLabel,
+      feed: inputs.feed,
+      accessRouteSource: "停留所から工事区間最寄り点への暫定接続線。実歩行経路ではありません。",
+    },
+  };
 }
 
 function tracePayload() {
@@ -698,7 +660,7 @@ function severityLabel(value) {
 }
 
 function relationLabel(value) {
-  const labels = { crosses: "交差", nearby: "近接" };
+  const labels = { crosses: "交差", nearby: "近接", nearby_stop: "近接停留所" };
   return labels[value] || value || "-";
 }
 
@@ -706,26 +668,34 @@ function renderLastMileImpact() {
   const impact = currentLastMileImpact();
   els.transitList.replaceChildren();
   if (!impact) {
-    els.transitSummary.textContent = "施工区間が2点以上になると、徒歩アクセス影響を確認します。";
+    els.transitSummary.textContent = state.coordinates.length < 2
+      ? "施工区間が2点以上になると、実GTFS停留所から徒歩アクセス影響を確認します。"
+      : state.gtfsLoadMessage;
     const li = document.createElement("li");
-    li.textContent = "ODPT/GTFSの駅・停留所データを、工事区間の周辺確認に接続する想定です。";
+    li.textContent = "データ元: GTFSデータリポジトリ 国立市コミュニティバス「くにっこ」";
     els.transitList.append(li);
     return;
   }
-  els.transitSummary.textContent = impact.summary.sentence;
+  els.transitSummary.textContent = `${impact.summary.sentence} データ元: ${impact.dataSource.sourceLabel}`;
   if (impact.affectedAccessRoutes.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "影響候補の徒歩アクセス経路はありません。";
+    li.textContent = "実GTFS停留所からの影響候補はありません。停留所のない地域では表示されません。";
     els.transitList.append(li);
     return;
   }
+  const sourceLi = document.createElement("li");
+  sourceLi.textContent = impact.dataSource.accessRouteSource;
+  els.transitList.append(sourceLi);
   impact.affectedAccessRoutes.slice(0, 4).forEach((route) => {
     const li = document.createElement("li");
     li.className = `severity-${route.severity}`;
     const label = document.createElement("strong");
     const text = document.createElement("span");
     label.textContent = severityLabel(route.severity);
-    text.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relationLabel(route.relation)} / 工事区間から${route.distanceMeters}m / ${route.stop?.name || route.stopId || "停留所"}`;
+    const stopDistance = route.distanceToConstructionMeters !== undefined
+      ? `停留所から工事区間まで約${Math.round(route.distanceToConstructionMeters)}m`
+      : `工事区間から${route.distanceMeters}m`;
+    text.textContent = `${route.label || route.destinationName || "徒歩アクセス"}: ${relationLabel(route.relation)} / ${stopDistance} / ${route.stop?.name || route.stopId || "停留所"}`;
     li.append(label, text);
     els.transitList.append(li);
   });
@@ -942,6 +912,37 @@ map.on("load", () => {
   });
   renderTrace();
 });
+
+async function loadGtfsStops() {
+  state.gtfsLoadStatus = "loading";
+  state.gtfsLoadMessage = "GTFSデータリポジトリの公式APIから実データを読み込んでいます。";
+  renderLastMileImpact();
+  try {
+    state.gtfsStopsGeojson = await fetchGtfsStopsGeojson({
+      feed: GTFS_DATA_REPOSITORY_FEED,
+      url: GTFS_DATA_REPOSITORY_FEED.stopsUrl,
+    });
+    state.gtfsLoadStatus = "ready";
+    state.gtfsLoadMessage = "GTFSデータリポジトリ公式APIから取得した実停留所データを使用中です。";
+  } catch (error) {
+    try {
+      state.gtfsStopsGeojson = await fetchGtfsStopsGeojson({
+        feed: GTFS_DATA_REPOSITORY_FEED,
+        url: GTFS_DATA_REPOSITORY_FEED.bundledStopsUrl,
+      });
+      state.gtfsLoadStatus = "fallback";
+      state.gtfsLoadMessage = "公式APIへ接続できないため、同じGTFSデータリポジトリから取得済みの実スナップショットを使用中です。";
+    } catch (fallbackError) {
+      state.gtfsStopsGeojson = null;
+      state.gtfsLoadStatus = "error";
+      state.gtfsLoadMessage = "実GTFS停留所データを読み込めませんでした。";
+    }
+  }
+  if (map.loaded()) renderTrace();
+  else renderLastMileImpact();
+}
+
+loadGtfsStops();
 
 map.on("click", (event) => {
   if (!state.drawing) return;

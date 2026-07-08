@@ -144,6 +144,11 @@ function roundMeters(value) {
 }
 
 function severityFor(relation, distanceMeters) {
+  if (relation === "nearby_stop") {
+    if (distanceMeters <= 50) return "high";
+    if (distanceMeters <= 200) return "medium";
+    return "low";
+  }
   if (relation === "crosses" || distanceMeters <= 5) return "high";
   if (distanceMeters <= 20) return "medium";
   return "low";
@@ -190,10 +195,16 @@ function buildAffectedAccessRoutes(accessRoutes, constructionLine, stopsById, ro
       const sourceRoute = safeObject(route);
       const coordinates = normalizeLineString(sourceRoute.coordinates);
       if (coordinates.length < 2) return null;
-      const crosses = lineIntersectsLine(coordinates, constructionLine);
-      const rawDistance = crosses ? 0 : lineDistanceToLineMeters(coordinates, constructionLine);
+      const isNearestPointLink = sourceRoute.sourceKind === "nearest_point_link" &&
+        Number.isFinite(Number(sourceRoute.distanceToConstructionMeters));
+      const crosses = !isNearestPointLink && lineIntersectsLine(coordinates, constructionLine);
+      const rawDistance = isNearestPointLink
+        ? Number(sourceRoute.distanceToConstructionMeters)
+        : crosses ? 0 : lineDistanceToLineMeters(coordinates, constructionLine);
       const distanceMeters = roundMeters(rawDistance);
-      const relation = crosses ? "crosses" : distanceMeters !== null && distanceMeters <= routeThresholdMeters ? "nearby" : null;
+      const relation = isNearestPointLink
+        ? "nearby_stop"
+        : crosses ? "crosses" : distanceMeters !== null && distanceMeters <= routeThresholdMeters ? "nearby" : null;
       if (!relation) return null;
       const severity = severityFor(relation, distanceMeters);
       return {
@@ -204,6 +215,8 @@ function buildAffectedAccessRoutes(accessRoutes, constructionLine, stopsById, ro
         coordinates,
         relation,
         distanceMeters,
+        sourceKind: sourceRoute.sourceKind,
+        distanceToConstructionMeters: sourceRoute.distanceToConstructionMeters,
         severity,
         stop: stopInfo(stopsById.get(sourceRoute.stopId)),
       };
@@ -260,6 +273,8 @@ function buildGeojson(nearbyStops, affectedAccessRoutes) {
           relation: route.relation,
           severity: route.severity,
           distanceMeters: route.distanceMeters,
+          sourceKind: route.sourceKind,
+          distanceToConstructionMeters: route.distanceToConstructionMeters,
         },
         geometry: { type: "LineString", coordinates: route.coordinates },
       })),

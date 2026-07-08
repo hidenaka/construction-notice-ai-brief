@@ -174,7 +174,7 @@ export function affectedUsersFromDraft(draft) {
 
 export function sampleDraft() {
   return {
-    title: "○○通り 水道工事のお知らせ",
+    title: "国立駅北口 駅前通り舗装補修のお知らせ",
     startAt: "2026-07-10",
     endAt: "2026-08-20",
     timeWindow: "09:00-17:00",
@@ -191,9 +191,9 @@ export function sampleDraft() {
       confidence: 0.72,
       sourceDocumentId: "map-sample",
       coordinates: [
-        [139.76585, 35.68105],
-        [139.76715, 35.68147],
-        [139.76835, 35.68176],
+        [139.44592, 35.69918],
+        [139.44628, 35.69924],
+        [139.44674, 35.69924],
       ],
     },
   };
