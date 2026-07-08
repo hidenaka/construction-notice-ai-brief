@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>工事のお知らせ | おさんぽセーフティ</title>
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Hiragino Sans", sans-serif; color: #222; background: #f4f1e8; }
+  .sheet { max-width: 640px; margin: 0 auto; background: #fff; min-height: 100vh; padding: 20px 20px 32px; }
+  h1 { font-size: 26px; margin: 0 0 4px; border-bottom: 4px solid #2e9e6b; padding-bottom: 10px; }
+  .field { margin: 14px 0; }
+  .field .label { font-size: 12px; color: #666; }
+  .field .value { font-size: 18px; font-weight: 700; }
+  #map { width: 100%; height: 260px; border-radius: 8px; margin: 14px 0; border: 1px solid #ddd; }
+  .qr-block { display: flex; align-items: center; gap: 16px; margin: 18px 0; padding: 14px; background: #f4f1e8; border-radius: 8px; }
+  .qr-block img { width: 120px; height: 120px; }
+  .qr-note { font-size: 12px; color: #444; }
+  .actions { display: flex; gap: 10px; margin: 18px 0; }
+  .actions button, .actions a { flex: 1; text-align: center; padding: 12px; border-radius: 8px; border: 0; font-size: 15px; cursor: pointer; text-decoration: none; }
+  #print-btn { background: #2e9e6b; color: #fff; }
+  #back-link { background: #eee; color: #222; }
+  #disclaimer { margin-top: 20px; font-size: 11px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+  #error-view { padding: 40px 20px; text-align: center; font-size: 16px; color: #900; }
+  @media print {
+    body { background: #fff; }
+    .sheet { max-width: none; padding: 0; }
+    .actions, #back-link { display: none; }
+    h1 { font-size: 34px; }
+    .qr-block { position: relative; float: right; margin-left: 20px; }
+  }
+</style>
+</head><body>
+<div class="sheet" id="sheet">
+  <h1>工事のお知らせ</h1>
+  <div id="content">
+    <div class="field"><div class="label">工事名</div><div class="value" id="n-title"></div></div>
+    <div class="field"><div class="label">期間</div><div class="value" id="n-period"></div></div>
+    <div class="field" id="n-timewindow-field" hidden><div class="label">時間帯</div><div class="value" id="n-timewindow"></div></div>
+    <div class="field"><div class="label">規制内容</div><div class="value" id="n-type"></div></div>
+    <div class="field"><div class="label">影響を受ける方</div><div class="value" id="n-users"></div></div>
+    <div id="map"></div>
+    <div class="qr-block">
+      <div id="qr"></div>
+      <div class="qr-note">現場の看板にこのQRを貼ると、通行される方がスマホで詳細を確認できます</div>
+    </div>
+    <div class="actions">
+      <button id="print-btn">🖨 お知らせビラを印刷</button>
+      <a id="back-link" href="./">地図アプリで開く</a>
+    </div>
+  </div>
+  <div id="error-view" hidden>お知らせが見つかりません</div>
+  <div id="disclaimer">本ページはプロトタイプです。実際の通行可否は現地の標識・誘導員の案内に従ってください。</div>
+</div>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script type="module" src="notice.js"></script>
+</body></html>
