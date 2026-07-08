@@ -1,3 +1,5 @@
+import { decodeRestrictionFromUrl } from "./share-link.js";
+
 const RESTRICTION_TYPE_JA = {
   sidewalk_closed: "歩道通行止め",
   sidewalk_narrowed: "歩道が狭くなります",
@@ -56,16 +58,23 @@ function bboxOf(coords) {
 }
 
 async function main() {
-  const id = new URLSearchParams(location.search).get("id");
-  if (!id) { showError(); return; }
+  const params = new URLSearchParams(location.search);
+  const sharedData = params.get("data");
+  const id = params.get("id");
+  if (!id && !sharedData) { showError(); return; }
   let restriction = null;
-  try {
-    const res = await fetch("/api/restrictions/" + encodeURIComponent(id));
-    if (res.ok) ({ restriction } = await res.json());
-  } catch (err) {
-    restriction = null;
+  if (sharedData) {
+    restriction = decodeRestrictionFromUrl(sharedData);
   }
-  if (!restriction && canUseLocalPreviewFallback()) restriction = localPreviewRestriction(id);
+  if (!restriction && id) {
+    try {
+      const res = await fetch("/api/restrictions/" + encodeURIComponent(id));
+      if (res.ok) ({ restriction } = await res.json());
+    } catch (err) {
+      restriction = null;
+    }
+  }
+  if (!restriction && id && canUseLocalPreviewFallback()) restriction = localPreviewRestriction(id);
   if (!restriction) { showError(); return; }
 
   document.getElementById("n-title").textContent = restriction.title;

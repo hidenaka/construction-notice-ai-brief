@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>工事のお知らせ | おさんぽセーフティ</title>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, "Hiragino Sans", sans-serif; color: #222; background: #f4f1e8; }
@@ -52,7 +52,7 @@
   <div id="error-view" hidden>お知らせが見つかりません</div>
   <div id="disclaimer">本ページはプロトタイプです。実際の通行可否は現地の標識・誘導員の案内に従ってください。</div>
 </div>
-<script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
-<script src="notice.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script type="module" src="notice.js"></script>
 </body></html>

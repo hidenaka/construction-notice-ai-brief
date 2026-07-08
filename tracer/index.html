@@ -2,7 +2,7 @@
 <html lang="ja"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>施工区間トレーサー | おさんぽセーフティ</title>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
 <link rel="stylesheet" href="trace.css">
 </head><body>
 <header class="trace-header">
@@ -67,6 +67,6 @@
 </main>
 
 <footer class="trace-footer">AI/OCRの読み取り結果は下書きです。公開に使う施工区間は、この画面で人間が確定した座標を正とします。</footer>
-<script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
-<script src="trace.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script type="module" src="trace.js"></script>
 </body></html>

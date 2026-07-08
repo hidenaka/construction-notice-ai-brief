@@ -1,3 +1,5 @@
+import { restrictionToShareUrl } from "./share-link.js";
+
 const GSI = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
 const state = { drawing: false, coordinates: [], markers: [], savedId: null };
 
@@ -253,7 +255,14 @@ function saveLocalPreview(payload) {
     updatedAt: new Date().toISOString(),
   };
   localStorage.setItem(`construction-notice:${id}`, JSON.stringify({ restriction }));
-  return id;
+  return restriction;
+}
+
+function showNoticeLink(href, statusText) {
+  els.noticeLink.href = href;
+  els.noticeLink.hidden = false;
+  els.status.textContent = statusText;
+  fitToTrace();
 }
 
 els.save.onclick = async () => {
@@ -268,6 +277,16 @@ els.save.onclick = async () => {
   }
   els.save.disabled = true;
   els.status.textContent = "施工区間を保存しています...";
+  if (canUseLocalPreviewFallback()) {
+    const restriction = saveLocalPreview(payload);
+    state.savedId = restriction.id;
+    showNoticeLink(
+      restrictionToShareUrl("notice.html", restriction),
+      "共有できるQRページを作成しました。別のスマホでもこのリンクから確認できます。",
+    );
+    renderTrace();
+    return;
+  }
   try {
     const res = await fetch("/api/restrictions", {
       method: "POST",
@@ -277,23 +296,12 @@ els.save.onclick = async () => {
     if (!res.ok) throw new Error("save failed");
     const body = await res.json();
     state.savedId = body.id;
-    const href = `notice.html?id=${encodeURIComponent(body.id)}`;
-    els.noticeLink.href = href;
-    els.noticeLink.hidden = false;
-    els.status.textContent = "保存しました。同じ施工区間がQRページに表示されます。";
-    fitToTrace();
+    showNoticeLink(
+      `notice.html?id=${encodeURIComponent(body.id)}`,
+      "保存しました。同じ施工区間がQRページに表示されます。",
+    );
   } catch (error) {
-    if (!canUseLocalPreviewFallback()) {
-      els.status.textContent = "保存に失敗しました。線は消していないので、内容を確認して再試行してください。";
-      return;
-    }
-    const demoId = saveLocalPreview(payload);
-    state.savedId = demoId;
-    const href = `notice.html?id=${encodeURIComponent(demoId)}`;
-    els.noticeLink.href = href;
-    els.noticeLink.hidden = false;
-    els.status.textContent = "GitHub Pages確認用に、この端末内のプレビューとして保存しました。";
-    fitToTrace();
+    els.status.textContent = "保存に失敗しました。線は消していないので、内容を確認して再試行してください。";
   } finally {
     renderTrace();
   }
