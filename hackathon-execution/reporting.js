@@ -259,6 +259,35 @@ function normalizeMetrics(metrics) {
   };
 }
 
+function normalizeTransitImpact(impact) {
+  const source = safeObject(impact);
+  const summary = safeObject(source.summary);
+  const dataSource = safeObject(source.dataSource);
+  const routes = asArray(source.affectedAccessRoutes).map((route) => {
+    const item = safeObject(route);
+    const stop = safeObject(item.stop);
+    return {
+      label: item.label || item.destinationName || "",
+      relation: item.relation || "",
+      severity: item.severity || "",
+      distanceToConstructionMeters: Number.isFinite(Number(item.distanceToConstructionMeters))
+        ? Number(item.distanceToConstructionMeters)
+        : null,
+      distanceMeters: Number.isFinite(Number(item.distanceMeters)) ? Number(item.distanceMeters) : null,
+      stopName: stop.name || item.stopName || item.stopId || "",
+    };
+  });
+  return {
+    affectedCount: Number.isFinite(Number(summary.affectedCount)) ? Number(summary.affectedCount) : routes.length,
+    highCount: Number.isFinite(Number(summary.highCount)) ? Number(summary.highCount) : routes.filter((route) => route.severity === "high").length,
+    mediumCount: Number.isFinite(Number(summary.mediumCount)) ? Number(summary.mediumCount) : routes.filter((route) => route.severity === "medium").length,
+    sentence: summary.sentence || "",
+    sourceLabel: dataSource.sourceLabel || source.sourceLabel || "",
+    accessRouteSource: dataSource.accessRouteSource || source.accessRouteSource || "",
+    affectedAccessRoutes: routes,
+  };
+}
+
 function normalizeProject(payload, draft) {
   const project = safeObject(payload.project);
   return {
@@ -444,6 +473,7 @@ export function buildOwnerReport(payload, options = {}) {
     inquiryCategories: normalizeInquiryCategories(sourcePayload.inquiryCategories),
     project: normalizeProject(sourcePayload, draft),
     map: normalizeMap(sourcePayload, draft),
+    transitImpact: normalizeTransitImpact(sourcePayload.lastMileImpact || sourcePayload.transitImpact),
     safetyReview,
   };
 }
@@ -466,5 +496,56 @@ export function buildPilotPackage(report, options = {}) {
       remainsHumanApproved: HUMAN_APPROVAL_SCOPE,
       pendingFields: asArray(sourceReport.safetyReview && sourceReport.safetyReview.confirmationRequired),
     },
+  };
+}
+
+export function buildNoticeExecutionPackage(payload, options = {}) {
+  const sourcePayload = safeObject(payload);
+  const draft = safeObject(sourcePayload.draft || sourcePayload);
+  const reviewItems = sourcePayload.reviewItems || sourcePayload.review || [];
+  const safetyReview = sourcePayload.safetyReview || buildSafetyReview(draft, reviewItems, options);
+  const hasTransitImpact = hasValue(sourcePayload.lastMileImpact || sourcePayload.transitImpact);
+  const generatedOutputs = [
+    "住民向けQRページ",
+    "A4周知チラシ",
+    "変更履歴",
+    "発注者向けレポート",
+  ];
+  if (hasTransitImpact) generatedOutputs.push("GTFS近接停留所確認");
+  const changeHistory = sourcePayload.changeHistory || [
+    {
+      changedAt: generatedAt(options),
+      summary: hasTransitImpact
+        ? "既存資料から周知下書き・地図候補・GTFS近接停留所確認を生成"
+        : "既存資料から周知下書き・地図候補を生成",
+      approvedBy: null,
+    },
+  ];
+  const ownerReport = buildOwnerReport(
+    {
+      ...sourcePayload,
+      draft,
+      reviewItems,
+      safetyReview,
+      changeHistory,
+      deliverables: sourcePayload.deliverables || generatedOutputs,
+      status: sourcePayload.status || (sourcePayload.publicUrl ? "published" : safetyReview.status),
+    },
+    options,
+  );
+  const validationRecord = buildValidationRecord(draft, reviewItems, options);
+  const pilotPackage = buildPilotPackage(ownerReport, options);
+
+  return {
+    workflow: {
+      sourceMode: "existing_documents",
+      duplicateEntryRequired: false,
+      manualCorrectionScope: ["低信頼項目", "地図候補がずれた場合", "公開前承認"],
+      generatedOutputs,
+    },
+    ownerReport,
+    safetyReview,
+    validationRecord,
+    pilotPackage,
   };
 }

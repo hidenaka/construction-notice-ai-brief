@@ -109,6 +109,8 @@ export function mapCandidateFromDraft(draft) {
   return {
     source: source.source || "位置図・作業帯図",
     confidence,
+    sourceDocumentId: source.sourceDocumentId || source.documentId || null,
+    evidence: source.evidence || source.quote || source.text || "",
     coordinates,
     needsReview: confidence < REVIEW_CONFIDENCE_THRESHOLD,
   };
@@ -156,6 +158,8 @@ export function reviewItemsFromDraft(draft) {
       label: "地図候補",
       value: mapCandidate ? `${mapCandidate.source} / ${mapCandidate.coordinates.length}点` : "",
       confidence: mapCandidate ? mapCandidate.confidence : 0,
+      sourceDocumentId: mapCandidate ? mapCandidate.sourceDocumentId : null,
+      evidence: mapCandidate ? mapCandidate.evidence : "",
     },
   ];
   return items.map((item) => ({

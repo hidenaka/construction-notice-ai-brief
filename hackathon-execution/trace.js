@@ -9,10 +9,8 @@ import {
 } from "./document-intake.js";
 import { inferLanePlanInput, inferenceSummary } from "./lane-inference.js";
 import {
-  buildOwnerReport,
-  buildPilotPackage,
+  buildNoticeExecutionPackage,
   buildSafetyReview,
-  buildValidationRecord,
 } from "./reporting.js";
 import {
   buildGtfsLastMileInputs,
@@ -102,6 +100,9 @@ const els = {
   reportPublishedAt: document.getElementById("report-published-at"),
   reportConfirmedBy: document.getElementById("report-confirmed-by"),
   reportViews: document.getElementById("report-views"),
+  reportSourceMode: document.getElementById("report-source-mode"),
+  reportDuplicateEntry: document.getElementById("report-duplicate-entry"),
+  reportTransitImpact: document.getElementById("report-transit-impact"),
   reportDeliverables: document.getElementById("report-deliverables"),
   reportHistory: document.getElementById("report-history"),
   reportInquiries: document.getElementById("report-inquiries"),
@@ -427,31 +428,40 @@ function currentReportArtifacts() {
   const approvedFields = approvedFieldIds(reviewItems);
   const confirmedFields = state.savedId ? explicitlyConfirmedFieldIds(reviewItems) : [];
   const publicUrl = els.noticeLink.hidden ? null : els.noticeLink.href;
-  const safetyReview = buildSafetyReview(draft, reviewItems, { approvedFields, confirmedFields });
-  const validationRecord = buildValidationRecord(draft, reviewItems, { approvedFields, confirmedFields });
-  const report = buildOwnerReport({
+  const lanePlan = currentLanePlan();
+  const sourceDocuments = Array.isArray(draft.sourceDocuments) && draft.sourceDocuments.length
+    ? draft.sourceDocuments
+    : state.documentSourceName
+      ? [{ id: "source-1", name: state.documentSourceName, type: "document" }]
+      : [];
+  const execution = buildNoticeExecutionPackage({
     draft,
     reviewItems,
-    safetyReview,
-    status: state.savedId ? "published" : safetyReview.status,
+    status: state.savedId ? "published" : undefined,
     publicUrl,
     confirmedBy: state.inferenceAccepted ? ["現場担当者 確認済み"] : [],
-    sourceDocuments: state.documentSourceName ? [{ id: "source-1", name: state.documentSourceName, type: "document" }] : [],
+    sourceDocuments,
     map: {
       coordinates: state.coordinates,
-      laneSummary: currentLanePlan() ? laneSummary(currentLanePlan()) : "",
+      laneSummary: lanePlan ? laneSummary(lanePlan) : "",
     },
+    lastMileImpact: currentLastMileImpact(),
     metrics: state.savedId ? { views: 128, uniqueViews: 86, inquiries: 6 } : { views: 0, uniqueViews: 0, inquiries: 0 },
     inquiryCategories: state.savedId ? { "通行可否": 3, "工期": 1, "迂回路": 1, "その他": 1 } : undefined,
     changeHistory: state.savedId
       ? [
           { changedAt: new Date().toISOString(), summary: "確認済み周知を公開", approvedBy: "現場担当者" },
-          { changedAt: new Date().toISOString(), summary: "住民向けQR・A4・発注者報告を同時生成", approvedBy: "システム記録" },
+          { changedAt: new Date().toISOString(), summary: "住民向けQR・A4・GTFS近接確認・発注者報告を同時生成", approvedBy: "システム記録" },
         ]
       : [{ summary: "資料読取から下書きを作成", approvedBy: null }],
-  });
-  const pilotPackage = buildPilotPackage(report);
-  return { report, safetyReview, validationRecord, pilotPackage };
+  }, { approvedFields, confirmedFields });
+  return {
+    workflow: execution.workflow,
+    report: execution.ownerReport,
+    safetyReview: execution.safetyReview,
+    validationRecord: execution.validationRecord,
+    pilotPackage: execution.pilotPackage,
+  };
 }
 
 function renderList(el, items, renderText) {
@@ -470,11 +480,16 @@ function renderList(el, items, renderText) {
 }
 
 function renderReportArtifacts() {
-  const { report, safetyReview, validationRecord, pilotPackage } = currentReportArtifacts();
+  const { workflow, report, safetyReview, validationRecord, pilotPackage } = currentReportArtifacts();
   els.reportStatus.textContent = statusLabel(report.status);
   els.reportPublishedAt.textContent = state.savedId ? shortDateTime(report.publishedAt) : "公開前";
   els.reportConfirmedBy.textContent = report.confirmedBy.length ? report.confirmedBy.join("、") : "確認待ち";
   els.reportViews.textContent = `${report.metrics.views}閲覧 / 問い合わせ${report.metrics.inquiries}件`;
+  els.reportSourceMode.textContent = workflow.sourceMode === "existing_documents" ? "既存資料" : workflow.sourceMode;
+  els.reportDuplicateEntry.textContent = workflow.duplicateEntryRequired ? "必要" : "なし";
+  els.reportTransitImpact.textContent = report.transitImpact.affectedCount > 0
+    ? `${report.transitImpact.affectedCount}件候補 / ${report.transitImpact.sourceLabel || "GTFS"}`
+    : state.coordinates.length >= 2 ? "近接候補なし" : "施工区間待ち";
   renderList(els.reportDeliverables, report.deliverables.filter((item) => item.included), (item) => item.label);
   renderList(els.reportHistory, report.changeHistory, (item) => {
     const at = item.changedAt ? shortDateTime(item.changedAt) : "下書き";
