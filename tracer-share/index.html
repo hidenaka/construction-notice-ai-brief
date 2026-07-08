@@ -24,15 +24,45 @@
     <label>時間帯 <input id="trace-time" placeholder="09:00-17:00"></label>
     <label>規制種別
       <select id="trace-type">
+        <option value="lane_closure">車線規制</option>
         <option value="sidewalk_closed">歩道通行止め</option>
         <option value="sidewalk_narrowed">歩道狭小</option>
         <option value="road_closed">通行止め</option>
-        <option value="lane_closure">車線規制</option>
         <option value="alternating_one_way">片側交互通行</option>
         <option value="bicycle_lane_closed">自転車レーン規制</option>
         <option value="turn_restriction">右左折規制</option>
       </select>
     </label>
+    <fieldset>
+      <legend>車線構成</legend>
+      <label>描画方向の車線数
+        <select id="forward-lanes">
+          <option value="0">なし</option>
+          <option value="1" selected>1車線</option>
+          <option value="2">2車線</option>
+          <option value="3">3車線</option>
+          <option value="4">4車線</option>
+        </select>
+      </label>
+      <label>反対方向の車線数
+        <select id="opposite-lanes">
+          <option value="0">なし</option>
+          <option value="1" selected>1車線</option>
+          <option value="2">2車線</option>
+          <option value="3">3車線</option>
+          <option value="4">4車線</option>
+        </select>
+      </label>
+      <label>車線幅
+        <select id="lane-width">
+          <option value="3">3.0m</option>
+          <option value="3.25" selected>3.25m</option>
+          <option value="3.5">3.5m</option>
+          <option value="4">4.0m</option>
+        </select>
+      </label>
+      <div class="lane-picker" id="lane-picker" aria-label="規制する車線"></div>
+    </fieldset>
     <fieldset>
       <legend>影響対象</legend>
       <label><input type="checkbox" name="affected" value="pedestrian" checked> 歩行者</label>

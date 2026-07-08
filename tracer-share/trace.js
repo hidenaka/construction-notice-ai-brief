@@ -1,7 +1,8 @@
+import { buildLanePlan, laneSummary } from "./lane-plan.js";
 import { restrictionToShareUrl } from "./share-link.js";
 
 const GSI = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
-const state = { drawing: false, coordinates: [], markers: [], savedId: null };
+const state = { drawing: false, coordinates: [], markers: [], savedId: null, closedLaneIds: ["forward-1"] };
 
 const els = {
   title: document.getElementById("trace-title"),
@@ -9,6 +10,10 @@ const els = {
   end: document.getElementById("trace-end"),
   time: document.getElementById("trace-time"),
   type: document.getElementById("trace-type"),
+  forwardLanes: document.getElementById("forward-lanes"),
+  oppositeLanes: document.getElementById("opposite-lanes"),
+  laneWidth: document.getElementById("lane-width"),
+  lanePicker: document.getElementById("lane-picker"),
   pointCount: document.getElementById("point-count"),
   distance: document.getElementById("trace-distance"),
   status: document.getElementById("trace-status"),
@@ -78,6 +83,14 @@ function selectedAffectedUsers() {
 }
 
 function tracePayload() {
+  const lanePlan = currentLanePlan();
+  const laneSpec = lanePlan ? {
+    roadAxis: state.coordinates,
+    laneWidthMeters: lanePlan.laneWidthMeters,
+    forwardLaneCount: lanePlan.forwardLaneCount,
+    oppositeLaneCount: lanePlan.oppositeLaneCount,
+    closedLaneIds: lanePlan.closedLaneIds,
+  } : null;
   return {
     title: els.title.value.trim() || "道路工事",
     coordinates: state.coordinates,
@@ -87,6 +100,9 @@ function tracePayload() {
     endAt: els.end.value || null,
     timeWindow: els.time.value.trim() || null,
     passability: "detour_required",
+    laneSpec,
+    lanePlan,
+    laneSummary: lanePlan ? laneSummary(lanePlan) : null,
   };
 }
 
@@ -127,12 +143,16 @@ function renderMarkers() {
 function renderTrace(options = {}) {
   const line = lineFeature();
   const points = pointFeatures();
+  const lanePlan = currentLanePlan();
+  if (map.getSource("lane-polygons")) map.getSource("lane-polygons").setData(lanePlan ? lanePlan.lanePolygons : emptyFeatureCollection());
+  if (map.getSource("lane-centerlines")) map.getSource("lane-centerlines").setData(lanePlan ? lanePlan.laneCenterlines : emptyFeatureCollection());
   if (map.getSource("trace-line")) map.getSource("trace-line").setData(line);
   if (map.getSource("trace-points")) map.getSource("trace-points").setData(points);
   if (!options.keepMarkers) renderMarkers();
 
   els.pointCount.textContent = String(state.coordinates.length);
   els.distance.textContent = formatDistance(totalMeters());
+  renderLanePicker(lanePlan);
   els.coordinateList.innerHTML = state.coordinates.map(([lng, lat], index) =>
     `<li>${index + 1}: ${lng.toFixed(7)}, ${lat.toFixed(7)}</li>`).join("");
   const hasLine = state.coordinates.length >= 2;
@@ -141,6 +161,40 @@ function renderTrace(options = {}) {
   els.copy.disabled = !hasLine;
   els.save.disabled = !hasLine || selectedAffectedUsers().length === 0 || Boolean(state.savedId);
   if (!hasLine) els.noticeLink.hidden = true;
+}
+
+function emptyFeatureCollection() {
+  return { type: "FeatureCollection", features: [] };
+}
+
+function currentLanePlan() {
+  if (state.coordinates.length < 2) return null;
+  return buildLanePlan({
+    roadAxis: state.coordinates,
+    forwardLaneCount: Number(els.forwardLanes.value),
+    oppositeLaneCount: Number(els.oppositeLanes.value),
+    laneWidthMeters: Number(els.laneWidth.value),
+    closedLaneIds: state.closedLaneIds,
+  });
+}
+
+function renderLanePicker(lanePlan) {
+  if (!lanePlan) {
+    els.lanePicker.innerHTML = "<p class=\"lane-empty\">施工区間を2点以上引くと、車線を選べます。</p>";
+    return;
+  }
+  els.lanePicker.innerHTML = lanePlan.lanes.map((lane) => `
+    <label>
+      <input type="checkbox" name="closed-lane" value="${lane.id}" ${lane.status === "closed" ? "checked" : ""}>
+      <span>${lane.label}</span>
+    </label>`).join("");
+  els.lanePicker.querySelectorAll('input[name="closed-lane"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      state.closedLaneIds = [...els.lanePicker.querySelectorAll('input[name="closed-lane"]:checked')].map((checked) => checked.value);
+      markTraceChanged();
+      renderTrace();
+    });
+  });
 }
 
 function markTraceChanged() {
@@ -159,6 +213,27 @@ function fitToTrace() {
 }
 
 map.on("load", () => {
+  map.addSource("lane-polygons", { type: "geojson", data: emptyFeatureCollection() });
+  map.addLayer({
+    id: "lane-polygons",
+    type: "fill",
+    source: "lane-polygons",
+    paint: {
+      "fill-color": ["match", ["get", "status"], "closed", "#c83a2c", "#2d7dd2"],
+      "fill-opacity": ["match", ["get", "status"], "closed", 0.42, 0.16],
+    },
+  });
+  map.addSource("lane-centerlines", { type: "geojson", data: emptyFeatureCollection() });
+  map.addLayer({
+    id: "lane-centerlines",
+    type: "line",
+    source: "lane-centerlines",
+    paint: {
+      "line-color": ["match", ["get", "status"], "closed", "#8f1f18", "#1f5f98"],
+      "line-width": ["match", ["get", "status"], "closed", 3, 1.5],
+      "line-dasharray": [2, 1],
+    },
+  });
   map.addSource("trace-line", { type: "geojson", data: lineFeature() });
   map.addLayer({
     id: "trace-line",
@@ -225,7 +300,7 @@ document.querySelectorAll('input[name="affected"]').forEach((input) => {
   });
 });
 
-[els.title, els.start, els.end, els.time, els.type].forEach((input) => {
+[els.title, els.start, els.end, els.time, els.type, els.forwardLanes, els.oppositeLanes, els.laneWidth].forEach((input) => {
   const handleChange = () => {
     markTraceChanged();
     renderTrace();
@@ -253,6 +328,8 @@ function saveLocalPreview(payload) {
     source: "manual",
     verificationStatus: "submitted",
     updatedAt: new Date().toISOString(),
+    laneSpec: payload.laneSpec,
+    laneSummary: payload.laneSummary,
   };
   localStorage.setItem(`construction-notice:${id}`, JSON.stringify({ restriction }));
   return restriction;

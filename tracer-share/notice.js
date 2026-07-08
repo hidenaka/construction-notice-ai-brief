@@ -1,4 +1,5 @@
 import { decodeRestrictionFromUrl } from "./share-link.js";
+import { buildLanePlan } from "./lane-plan.js";
 
 const RESTRICTION_TYPE_JA = {
   sidewalk_closed: "歩道通行止め",
@@ -57,6 +58,29 @@ function bboxOf(coords) {
   return [[minLng, minLat], [maxLng, maxLat]];
 }
 
+function lanePlanBbox(lanePlan, fallbackGeometry) {
+  const coords = [];
+  if (lanePlan && lanePlan.lanePolygons) {
+    for (const feature of lanePlan.lanePolygons.features || []) {
+      coords.push(...(feature.geometry.coordinates[0] || []));
+    }
+  }
+  if (coords.length === 0 && fallbackGeometry.type === "LineString") coords.push(...fallbackGeometry.coordinates);
+  return bboxOf(coords);
+}
+
+function displayLanePlan(restriction) {
+  if (restriction.lanePlan) return restriction.lanePlan;
+  if (!restriction.laneSpec) return null;
+  return buildLanePlan({
+    roadAxis: restriction.laneSpec.roadAxis || restriction.geometry.coordinates,
+    forwardLaneCount: restriction.laneSpec.forwardLaneCount,
+    oppositeLaneCount: restriction.laneSpec.oppositeLaneCount,
+    laneWidthMeters: restriction.laneSpec.laneWidthMeters,
+    closedLaneIds: restriction.laneSpec.closedLaneIds || [],
+  });
+}
+
 async function main() {
   const params = new URLSearchParams(location.search);
   const sharedData = params.get("data");
@@ -76,6 +100,7 @@ async function main() {
   }
   if (!restriction && id && canUseLocalPreviewFallback()) restriction = localPreviewRestriction(id);
   if (!restriction) { showError(); return; }
+  const lanePlan = displayLanePlan(restriction);
 
   document.getElementById("n-title").textContent = restriction.title;
   document.getElementById("n-period").textContent =
@@ -86,6 +111,10 @@ async function main() {
   }
   document.getElementById("n-type").textContent =
     RESTRICTION_TYPE_JA[restriction.restrictionType] || restriction.restrictionType;
+  if (restriction.laneSummary) {
+    document.getElementById("n-lane-field").hidden = false;
+    document.getElementById("n-lane-summary").textContent = restriction.laneSummary;
+  }
   document.getElementById("n-users").textContent =
     (restriction.affectedUsers || []).map((u) => AFFECTED_USER_JA[u] || u).join("・");
 
@@ -99,11 +128,19 @@ async function main() {
   });
   map.on("load", () => {
     map.resize(); // カードレイアウト確定後にキャンバス幅を再計算（右側が白抜けする問題の対策）
+    if (lanePlan && lanePlan.lanePolygons) {
+      map.addSource("lanes", { type: "geojson", data: lanePlan.lanePolygons });
+      map.addLayer({ id: "lane-polygons", type: "fill", source: "lanes",
+        paint: {
+          "fill-color": ["match", ["get", "status"], "closed", "#c83a2c", "#2d7dd2"],
+          "fill-opacity": ["match", ["get", "status"], "closed", 0.48, 0.14],
+        } });
+    }
     map.addSource("restriction", { type: "geojson", data: { type: "Feature", geometry: restriction.geometry } });
     map.addLayer({ id: "restriction-line", type: "line", source: "restriction",
       paint: { "line-color": "#c83a2c", "line-width": 5, "line-opacity": 0.8 } });
     if (restriction.geometry.type === "LineString") {
-      map.fitBounds(bboxOf(restriction.geometry.coordinates), { padding: 60, maxZoom: 16.5 });
+      map.fitBounds(lanePlanBbox(lanePlan, restriction.geometry), { padding: 60, maxZoom: 16.5 });
     }
   });
 
