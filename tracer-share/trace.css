@@ -17,6 +17,7 @@ fieldset input { width: auto; min-height: 0; margin: 0; }
 .lane-picker { display: grid; gap: 6px; margin-top: 8px; }
 .lane-picker label { min-height: 34px; margin: 0; padding: 7px 8px; border-radius: 8px; background: #eef5f0; color: #17201b; }
 .lane-picker input:checked + span { font-weight: 700; color: #a42a20; }
+.lane-profile-note { margin: 8px 0; padding: 8px; border-radius: 8px; background: #eef5f0; color: #34423b; font-size: 12px; line-height: 1.45; }
 .trace-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
 .trace-stats div { background: #eef5f0; border-radius: 8px; padding: 10px; }
 .trace-stats span { display: block; font-size: 11px; color: #66756d; }

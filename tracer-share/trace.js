@@ -13,6 +13,12 @@ const els = {
   forwardLanes: document.getElementById("forward-lanes"),
   oppositeLanes: document.getElementById("opposite-lanes"),
   laneWidth: document.getElementById("lane-width"),
+  profileMode: document.getElementById("lane-profile-mode"),
+  forwardLaneWidth: document.getElementById("forward-lane-width"),
+  oppositeLaneWidth: document.getElementById("opposite-lane-width"),
+  closureStart: document.getElementById("closure-start"),
+  closureEnd: document.getElementById("closure-end"),
+  profileNote: document.getElementById("lane-profile-note"),
   lanePicker: document.getElementById("lane-picker"),
   pointCount: document.getElementById("point-count"),
   distance: document.getElementById("trace-distance"),
@@ -89,6 +95,11 @@ function tracePayload() {
     laneWidthMeters: lanePlan.laneWidthMeters,
     forwardLaneCount: lanePlan.forwardLaneCount,
     oppositeLaneCount: lanePlan.oppositeLaneCount,
+    forwardLaneWidthMeters: Number(els.forwardLaneWidth.value),
+    oppositeLaneWidthMeters: Number(els.oppositeLaneWidth.value),
+    profileMode: els.profileMode.value,
+    laneProfiles: currentLaneProfiles(),
+    closedRanges: currentClosedRanges(),
     closedLaneIds: lanePlan.closedLaneIds,
   } : null;
   return {
@@ -145,6 +156,7 @@ function renderTrace(options = {}) {
   const points = pointFeatures();
   const lanePlan = currentLanePlan();
   if (map.getSource("lane-polygons")) map.getSource("lane-polygons").setData(lanePlan ? lanePlan.lanePolygons : emptyFeatureCollection());
+  if (map.getSource("closure-polygons")) map.getSource("closure-polygons").setData(lanePlan ? lanePlan.closurePolygons : emptyFeatureCollection());
   if (map.getSource("lane-centerlines")) map.getSource("lane-centerlines").setData(lanePlan ? lanePlan.laneCenterlines : emptyFeatureCollection());
   if (map.getSource("trace-line")) map.getSource("trace-line").setData(line);
   if (map.getSource("trace-points")) map.getSource("trace-points").setData(points);
@@ -153,6 +165,7 @@ function renderTrace(options = {}) {
   els.pointCount.textContent = String(state.coordinates.length);
   els.distance.textContent = formatDistance(totalMeters());
   renderLanePicker(lanePlan);
+  renderProfileNote();
   els.coordinateList.innerHTML = state.coordinates.map(([lng, lat], index) =>
     `<li>${index + 1}: ${lng.toFixed(7)}, ${lat.toFixed(7)}</li>`).join("");
   const hasLine = state.coordinates.length >= 2;
@@ -174,8 +187,70 @@ function currentLanePlan() {
     forwardLaneCount: Number(els.forwardLanes.value),
     oppositeLaneCount: Number(els.oppositeLanes.value),
     laneWidthMeters: Number(els.laneWidth.value),
-    closedLaneIds: state.closedLaneIds,
+    forwardLaneWidthMeters: Number(els.forwardLaneWidth.value),
+    oppositeLaneWidthMeters: Number(els.oppositeLaneWidth.value),
+    laneProfiles: currentLaneProfiles(),
+    closedRanges: currentClosedRanges(),
+    closedLaneIds: [],
   });
+}
+
+function widths(count, width) {
+  return Array.from({ length: Math.max(0, count) }, () => width);
+}
+
+function lastLaneTaper(widthList) {
+  if (widthList.length <= 1) return widthList;
+  return widthList.map((width, index) => index === widthList.length - 1 ? 0 : width);
+}
+
+function currentLaneProfiles() {
+  const mode = els.profileMode.value;
+  const forwardCount = Number(els.forwardLanes.value);
+  const oppositeCount = Number(els.oppositeLanes.value);
+  const forwardWidth = Number(els.forwardLaneWidth.value || els.laneWidth.value);
+  const oppositeWidth = Number(els.oppositeLaneWidth.value || els.laneWidth.value);
+  const forwardWidths = widths(forwardCount, forwardWidth);
+  const oppositeWidths = widths(oppositeCount, oppositeWidth);
+  if (mode === "uniform" || mode === "asymmetric" || mode === "taper") return null;
+  if (mode === "lane_drop") {
+    return [
+      { ratio: 0, forwardWidths, oppositeWidths },
+      { ratio: 0.65, forwardWidths, oppositeWidths },
+      { ratio: 0.85, forwardWidths: lastLaneTaper(forwardWidths), oppositeWidths },
+      { ratio: 1, forwardWidths: forwardWidths.slice(0, Math.max(1, forwardWidths.length - 1)), oppositeWidths },
+    ];
+  }
+  if (mode === "intersection") {
+    return [
+      { ratio: 0, forwardWidths, oppositeWidths },
+      { ratio: 0.2, forwardWidths, oppositeWidths },
+      { ratio: 0.55, forwardWidths: lastLaneTaper(forwardWidths), oppositeWidths: lastLaneTaper(oppositeWidths) },
+      { ratio: 0.75, forwardWidths: forwardWidths.slice(0, Math.max(1, forwardWidths.length - 1)), oppositeWidths: oppositeWidths.slice(0, Math.max(1, oppositeWidths.length - 1)) },
+      { ratio: 1, forwardWidths, oppositeWidths },
+    ];
+  }
+  return null;
+}
+
+function currentClosedRanges() {
+  const start = Math.max(0, Math.min(100, Number(els.closureStart.value) || 0)) / 100;
+  const end = Math.max(0, Math.min(100, Number(els.closureEnd.value) || 100)) / 100;
+  const startRatio = Math.min(start, end);
+  const endRatio = Math.max(start, end);
+  return state.closedLaneIds.map((laneId) => ({ laneId, startRatio, endRatio }));
+}
+
+function renderProfileNote() {
+  const mode = els.profileMode.value;
+  const notes = {
+    uniform: "標準: 全区間を同じ車線構成で描画します。",
+    asymmetric: "片側幅違い: 描画方向と反対方向で別々の車線幅を使います。",
+    lane_drop: "車線減少: 終盤で描画方向の外側車線を0mへ絞り、消える車線をテーパー形状にします。",
+    taper: "テーパー規制: 規制開始/終了の%で、赤い規制範囲だけを部分表示します。",
+    intersection: "交差点付近: 中央付近で車線が絞られ、交差点後に元の車線構成へ戻る形状を作ります。",
+  };
+  els.profileNote.textContent = notes[mode] || notes.uniform;
 }
 
 function renderLanePicker(lanePlan) {
@@ -219,8 +294,18 @@ map.on("load", () => {
     type: "fill",
     source: "lane-polygons",
     paint: {
-      "fill-color": ["match", ["get", "status"], "closed", "#c83a2c", "#2d7dd2"],
-      "fill-opacity": ["match", ["get", "status"], "closed", 0.42, 0.16],
+      "fill-color": "#2d7dd2",
+      "fill-opacity": 0.14,
+    },
+  });
+  map.addSource("closure-polygons", { type: "geojson", data: emptyFeatureCollection() });
+  map.addLayer({
+    id: "closure-polygons",
+    type: "fill",
+    source: "closure-polygons",
+    paint: {
+      "fill-color": "#c83a2c",
+      "fill-opacity": 0.52,
     },
   });
   map.addSource("lane-centerlines", { type: "geojson", data: emptyFeatureCollection() });
@@ -300,7 +385,7 @@ document.querySelectorAll('input[name="affected"]').forEach((input) => {
   });
 });
 
-[els.title, els.start, els.end, els.time, els.type, els.forwardLanes, els.oppositeLanes, els.laneWidth].forEach((input) => {
+[els.title, els.start, els.end, els.time, els.type, els.forwardLanes, els.oppositeLanes, els.laneWidth, els.profileMode, els.forwardLaneWidth, els.oppositeLaneWidth, els.closureStart, els.closureEnd].forEach((input) => {
   const handleChange = () => {
     markTraceChanged();
     renderTrace();

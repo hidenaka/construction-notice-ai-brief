@@ -61,6 +61,43 @@
           <option value="4">4.0m</option>
         </select>
       </label>
+      <label>形状プリセット
+        <select id="lane-profile-mode">
+          <option value="uniform" selected>標準</option>
+          <option value="asymmetric">片側だけ幅が違う</option>
+          <option value="lane_drop">途中で車線減少</option>
+          <option value="taper">テーパー規制</option>
+          <option value="intersection">交差点付近</option>
+        </select>
+      </label>
+      <div class="two-col">
+        <label>描画方向幅
+          <select id="forward-lane-width">
+            <option value="3">3.0m</option>
+            <option value="3.25" selected>3.25m</option>
+            <option value="3.5">3.5m</option>
+            <option value="4">4.0m</option>
+          </select>
+        </label>
+        <label>反対方向幅
+          <select id="opposite-lane-width">
+            <option value="2.75">2.75m</option>
+            <option value="3">3.0m</option>
+            <option value="3.25" selected>3.25m</option>
+            <option value="3.5">3.5m</option>
+            <option value="4">4.0m</option>
+          </select>
+        </label>
+      </div>
+      <div class="two-col">
+        <label>規制開始
+          <input id="closure-start" type="number" min="0" max="100" step="5" value="0">
+        </label>
+        <label>規制終了
+          <input id="closure-end" type="number" min="0" max="100" step="5" value="100">
+        </label>
+      </div>
+      <p class="lane-profile-note" id="lane-profile-note">標準: 全区間を同じ車線構成で描画します。</p>
       <div class="lane-picker" id="lane-picker" aria-label="規制する車線"></div>
     </fieldset>
     <fieldset>

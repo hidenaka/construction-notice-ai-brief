@@ -60,7 +60,11 @@ function bboxOf(coords) {
 
 function lanePlanBbox(lanePlan, fallbackGeometry) {
   const coords = [];
-  if (lanePlan && lanePlan.lanePolygons) {
+  if (lanePlan && lanePlan.closurePolygons && lanePlan.closurePolygons.features.length) {
+    for (const feature of lanePlan.closurePolygons.features || []) {
+      coords.push(...(feature.geometry.coordinates[0] || []));
+    }
+  } else if (lanePlan && lanePlan.lanePolygons) {
     for (const feature of lanePlan.lanePolygons.features || []) {
       coords.push(...(feature.geometry.coordinates[0] || []));
     }
@@ -77,7 +81,11 @@ function displayLanePlan(restriction) {
     forwardLaneCount: restriction.laneSpec.forwardLaneCount,
     oppositeLaneCount: restriction.laneSpec.oppositeLaneCount,
     laneWidthMeters: restriction.laneSpec.laneWidthMeters,
-    closedLaneIds: restriction.laneSpec.closedLaneIds || [],
+    forwardLaneWidthMeters: restriction.laneSpec.forwardLaneWidthMeters,
+    oppositeLaneWidthMeters: restriction.laneSpec.oppositeLaneWidthMeters,
+    laneProfiles: restriction.laneSpec.laneProfiles,
+    closedRanges: restriction.laneSpec.closedRanges,
+    closedLaneIds: restriction.laneSpec.closedRanges ? [] : restriction.laneSpec.closedLaneIds || [],
   });
 }
 
@@ -132,8 +140,14 @@ async function main() {
       map.addSource("lanes", { type: "geojson", data: lanePlan.lanePolygons });
       map.addLayer({ id: "lane-polygons", type: "fill", source: "lanes",
         paint: {
-          "fill-color": ["match", ["get", "status"], "closed", "#c83a2c", "#2d7dd2"],
-          "fill-opacity": ["match", ["get", "status"], "closed", 0.48, 0.14],
+          "fill-color": "#2d7dd2",
+          "fill-opacity": 0.14,
+        } });
+      map.addSource("closures", { type: "geojson", data: lanePlan.closurePolygons || { type: "FeatureCollection", features: [] } });
+      map.addLayer({ id: "closure-polygons", type: "fill", source: "closures",
+        paint: {
+          "fill-color": "#c83a2c",
+          "fill-opacity": 0.52,
         } });
     }
     map.addSource("restriction", { type: "geojson", data: { type: "Feature", geometry: restriction.geometry } });
