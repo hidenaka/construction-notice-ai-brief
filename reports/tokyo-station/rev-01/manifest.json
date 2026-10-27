@@ -1,0 +1,131 @@
+{
+  "version": "rev-01",
+  "public_url": "https://hidenaka.github.io/construction-notice-ai-brief/reports/tokyo-station/rev-01/",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 4224,
+      "sha256": "e2b0592782bbbf150792d8cff4e950138e30bb8c8f0e6fd9e5e02c7d3842516c"
+    },
+    {
+      "path": "map/app.js",
+      "bytes": 50292,
+      "sha256": "51ca981c46fcd7605cae533356e19a749e5944c7f02e41d3a9f4c6aea74d754e"
+    },
+    {
+      "path": "map/data/ground.json",
+      "bytes": 6249505,
+      "sha256": "ef73c7bde5cba35b8f021214d4a53897996e158fb2daa4a76f324ee43eaa6333"
+    },
+    {
+      "path": "map/data/indoor.json",
+      "bytes": 1038122,
+      "sha256": "ff4a674fd960bba486bfc9485d3f5fcba389cf611bfe6f927bc81ecf6ec7b662"
+    },
+    {
+      "path": "map/data/network.json",
+      "bytes": 202155,
+      "sha256": "5c9a239d066151213315887cd0d9e29d3a492f6691bbe2a791e473f5df26b251"
+    },
+    {
+      "path": "map/data/overlay.json",
+      "bytes": 55150,
+      "sha256": "3ff87a2f430465b795aa7c45acceef7325de37754c81556a9dbf121fd9017325"
+    },
+    {
+      "path": "map/data/scene.json",
+      "bytes": 1872843,
+      "sha256": "7c451c75ad09ed09061eb728a118f9a60cfcd4db82c1575fff839a181db45245"
+    },
+    {
+      "path": "map/data/schematic.json",
+      "bytes": 3048,
+      "sha256": "4ca99ab918c17f2b46977118b1dbd5b4964ecaeb984f02ee31929939071811de"
+    },
+    {
+      "path": "map/index.html",
+      "bytes": 15284,
+      "sha256": "aa503b486d826745097f7dd234dbece07d888802b36cd2348fed07d627e09e70"
+    },
+    {
+      "path": "map/vendor/OrbitControls.js",
+      "bytes": 29868,
+      "sha256": "5a44a9e86a2a0fb11933eed69bc2cd33c76a496854c1aed6ed776efa87d7b064"
+    },
+    {
+      "path": "map/vendor/three-LICENSE.txt",
+      "bytes": 1081,
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "path": "map/vendor/three.module.min.js",
+      "bytes": 670681,
+      "sha256": "3e690ac7d180b0aadf0891bea39eec643e29e2d3e75c99b18689518665f69ba6"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 730407,
+      "sha256": "8da4b821249b689e8437e48eadb25e63118bfb9f4521cab10d1b30679cb438a2"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 984347,
+      "sha256": "e03374cf08fcb85da64ae5f6c407f83551a267ebfda9a3a061ea00de2da7f6f4"
+    },
+    {
+      "path": "media/report.srt",
+      "bytes": 325,
+      "sha256": "49cd6953ff676130730a13ffcb44272b2730a5673f4f3279980edd29f155a58a"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 317,
+      "sha256": "d9972b4b61a000b202b58da0c35a5af70a408a13cc3537a5858afdb19695825c"
+    },
+    {
+      "path": "report/index.html",
+      "bytes": 6190,
+      "sha256": "1e801152a95ca813ef53274822ebee9b0514ae3c67d27461ba93ee2eedd03796"
+    },
+    {
+      "path": "report/media/map-2d.png",
+      "bytes": 164585,
+      "sha256": "d98000352ac5b33340d5be1209f89c8f39a042dfd5c89f2926f99dfb2d1bedd5"
+    },
+    {
+      "path": "report/media/map-3d.png",
+      "bytes": 161688,
+      "sha256": "b109fe09d2be20dcc4684aa9783865f64ff0938f2579ee6b38c72aea72916609"
+    },
+    {
+      "path": "report/media/map-phone.png",
+      "bytes": 69117,
+      "sha256": "162a32c63faa7b73a9966eae110737bbd0f3b6a7f44ed6d299174c8242e77d74"
+    },
+    {
+      "path": "report/media/poster.png",
+      "bytes": 575981,
+      "sha256": "901d79a88284fc29303d184b7922c4b5c9a5e6e98880e6bb367306965b7188d6"
+    },
+    {
+      "path": "report/media/report.mp4",
+      "bytes": 3037452,
+      "sha256": "29448f14062e36159f131b3bfd62c58064d2942d2e0f6669b25294d5c3754f7b"
+    },
+    {
+      "path": "report/media/report.srt",
+      "bytes": 989,
+      "sha256": "06de776cf5205f8a22757fde3da2889632d48a8db4dd37adbab59e4fd2373ff5"
+    },
+    {
+      "path": "report/media/report.vtt",
+      "bytes": 949,
+      "sha256": "6f748d10cd5be01949c463af76a33c1ecb2a8f133681347c82c9b5e783386991"
+    },
+    {
+      "path": "sources.html",
+      "bytes": 7016,
+      "sha256": "876062c83196e76ab69019e56c320ea08b8f209ed93a8e4fd21d25fbb71ee428"
+    }
+  ]
+}
