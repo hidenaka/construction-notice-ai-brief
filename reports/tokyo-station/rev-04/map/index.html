@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>東京駅 地下・地上</title>
+<style>
+:root{
+  --bg:#eef0f2; --panel:#ffffffee; --ink:#1d2329; --sub:#5b6570; --line:#c9cfd6;
+  --accent:#0b6bcb; --warn:#9a5b00; --chip:#e3e8ee; --chip-on:#1d2329; --chip-on-ink:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;-webkit-text-size-adjust:100%}
+#view{position:fixed;inset:0;touch-action:none}
+.bar{position:fixed;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-wrap:wrap;gap:6px;align-items:center;pointer-events:none}
+.bar>*{pointer-events:auto}
+.title{font-weight:700;font-size:15px;background:var(--panel);padding:6px 10px;border-radius:8px;box-shadow:0 1px 3px #0002}
+.seg{display:flex;background:var(--chip);border-radius:8px;padding:2px;box-shadow:0 1px 3px #0002}
+.seg button,.chip{border:0;background:transparent;color:var(--ink);font:inherit;font-size:14px;padding:7px 12px;border-radius:6px;min-height:36px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--chip-on);color:var(--chip-on-ink)}
+.chip{background:var(--panel);box-shadow:0 1px 3px #0002}
+.chip[aria-pressed=true]{background:var(--chip-on);color:var(--chip-on-ink)}
+#card{position:fixed;left:12px;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));max-width:420px;background:var(--panel);border-radius:10px;
+  padding:12px 14px;box-shadow:0 2px 10px #0003;font-size:14px;line-height:1.55;display:none}
+#card h2{font-size:16px;margin:0 0 4px}
+#card .k{color:var(--sub)}
+#card .note{color:var(--warn);font-size:12.5px;margin-top:6px}
+#card #cardClose{position:absolute;right:6px;top:4px;border:0;background:none;font-size:20px;color:var(--sub);cursor:pointer;min-width:36px;min-height:36px}
+#card button.go{font:inherit;font-size:14px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:6px;padding:2px 8px;min-height:30px;cursor:pointer}
+#cardBody{max-height:38vh;overflow:auto;padding-right:28px}
+.foot{position:fixed;left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));font-size:11.5px;color:var(--sub);background:var(--panel);
+  padding:5px 8px;border-radius:6px;line-height:1.45}
+#footMore{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;padding:0 4px;min-height:24px;cursor:pointer}
+.legend{position:fixed;right:12px;top:calc(100px + env(safe-area-inset-top));background:var(--panel);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:0 1px 3px #0002;line-height:1.7}
+#legendBtn{border:0;background:none;font:inherit;font-size:13px;font-weight:700;padding:4px 2px;min-height:32px;min-width:56px;cursor:pointer;color:var(--ink)}
+#legendBody{display:none}
+.legend.open #legendBody{display:block}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.bar,#card,.foot,.legend,#compass,#exitPanel,#schem{z-index:2}
+#labels button{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;border:0;background:#fffffff2;color:var(--ink);font:inherit;font-size:13px;font-weight:700;
+  padding:3px 7px;border-radius:5px;box-shadow:0 1px 3px #0004;white-space:nowrap;cursor:pointer;min-height:26px}
+#labels button.on{background:#ffc400}
+#labels button.gate{font-size:12px;background:#0b3d91;color:#fff;font-weight:600}
+#labels button.gate.jr{background:#1e7d32}
+#labels button.exit{font-size:12px;background:#c62828;color:#fff;border-radius:12px;min-width:30px}
+#labels button.exit.under{background:#fff;color:#c62828;outline:2px solid #c62828}
+#labels button.ent{font-size:11px;background:#f3e8ff;color:#5b2a86;font-weight:600;min-height:22px;padding:2px 6px}
+#labels button.stair{font-size:11px;background:#eceff1;color:#37474f;min-height:22px;padding:2px 6px}
+#labels button.dot{min-width:12px;min-height:12px;width:12px;height:12px;padding:0;border-radius:50%;border:2px solid #5b2a86}
+#labels button.stair.dot{border-color:#37474f}
+#labels button.yo.dot{border:2px solid #e0662b;background:#fff3e0;opacity:1}
+#labels button.exit,#labels button.gate,#labels button.cand{z-index:2}
+#labels button.yo{font-size:11px;background:#fff3e0;color:#bf360c;border:2px solid #e0662b;border-radius:10px;min-height:22px;padding:1px 6px}
+#labels button.head{background:none;box-shadow:none;color:#c62828;font-size:26px;padding:0;min-height:20px;min-width:20px;pointer-events:none}
+#labels button.head.low{opacity:.45}
+#schemB2{position:fixed;left:50%;transform:translateX(-50%);top:calc(100px + env(safe-area-inset-top));background:#f3e5f5;color:#4a148c;border:1px solid #ab47bc;border-radius:8px;padding:5px 10px;font-size:12.5px;max-width:min(560px,calc(100vw - 24px));text-align:center;display:none;z-index:2}
+#labels button.schem{font-size:12px;background:#f3e5f5;color:#4a148c;border:1px dashed #6a1b9a;font-weight:600;cursor:default}
+#labels button.yo.dim{opacity:.7;border-style:dashed}
+#labels button.yo.est{border-style:dashed}
+#labels button.headtag{font-size:10px;background:#fff;color:#c62828;border:1px dashed #c62828;min-height:16px;padding:0 3px;pointer-events:none}
+#labels button.headtag.low{opacity:.6}
+#labels button.cand{font-size:12px;background:#fff;color:#1565c0;border:2px dashed #1565c0;border-radius:12px;min-width:30px}
+#labels button.gate.on,#labels button.exit.on,#labels button.ent.on,#labels button.stair.on,#labels button.cand.on{background:#ffc400;color:#111}
+#schem{position:fixed;left:50%;transform:translateX(-50%);top:calc(100px + env(safe-area-inset-top));background:#fff3d6;color:#5a3d00;border:1px solid #e0b860;border-radius:8px;
+  padding:5px 10px;font-size:12.5px;max-width:min(560px,calc(100vw - 24px));text-align:center;display:none;box-shadow:0 1px 3px #0002}
+.search{position:relative}
+.search input{font:inherit;font-size:16px;width:13em;max-width:52vw;padding:6px 10px;border:1px solid var(--line);border-radius:8px;min-height:36px;background:var(--panel)}
+#results{position:absolute;left:0;top:40px;min-width:16em;max-width:80vw;background:#fff;border-radius:8px;box-shadow:0 2px 10px #0003;margin:0;padding:4px;list-style:none;display:none;max-height:50vh;overflow:auto;z-index:5}
+#results li button{display:block;width:100%;text-align:left;border:0;background:none;font:inherit;font-size:14px;padding:8px;border-radius:6px;cursor:pointer;min-height:36px}
+#results li button:hover,#results li button:focus{background:var(--chip)}
+#results .k{color:var(--sub);font-size:12px}
+#exitPanel{position:fixed;left:12px;top:calc(100px + env(safe-area-inset-top));width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 220px);overflow:auto;background:var(--panel);border-radius:10px;
+  box-shadow:0 2px 10px #0003;padding:10px 12px;font-size:13.5px;display:none}
+#exitPanel h2{font-size:15px;margin:0 0 4px}
+#exitPanel table{border-collapse:collapse;width:100%}
+#exitPanel td,#exitPanel th{border-bottom:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top}
+#exitPanel tr[data-exit]{cursor:pointer}
+#exitPanel tr[data-exit]:hover{background:var(--chip)}
+#exitPanel .note{color:var(--warn);font-size:12px;margin:4px 0}
+#compass{position:fixed;right:12px;top:calc(56px + env(safe-area-inset-top));width:40px;height:40px;border-radius:50%;background:var(--panel);box-shadow:0 1px 3px #0003;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+#compass span{display:block;transform-origin:50% 50%;line-height:1;text-align:center}
+#schem .short{display:none}
+@media (max-width:600px){ #schem .short{display:inline} #schem .long{display:none} #schem{top:auto;bottom:calc(64px + env(safe-area-inset-bottom));font-size:12px} body.has-card #schem{bottom:auto;top:calc(176px + env(safe-area-inset-top))} #compass{top:calc(130px + env(safe-area-inset-top))} .legend{top:calc(176px + env(safe-area-inset-top));bottom:auto} #exitPanel{top:calc(140px + env(safe-area-inset-top));max-height:calc(100vh - 280px)}  .title{font-size:13px;padding:6px 8px} .seg button,.chip{padding:6px 10px;font-size:13px} .bar{gap:5px} .foot{font-size:10.5px} }
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<link rel="stylesheet" href="./mobile.css?v=1eaf2eb96152">
+</head>
+<body>
+<div id="view" aria-label="地図"></div>
+<div class="bar">
+  <div class="title">東京駅 地下・地上</div>
+  <div class="seg" role="group" aria-label="表示">
+    <button id="m2d" aria-pressed="true">2D</button><button id="m3d" aria-pressed="false">3D</button>
+  </div>
+  <button class="chip" id="tBldg" aria-pressed="true">建物</button>
+  <button class="chip" id="tUnder" aria-pressed="true">地下</button>
+  <button class="chip" id="tNet" aria-pressed="true">歩ける道</button>
+  <div class="seg" role="group" aria-label="階">
+    <button data-floor="1F" aria-pressed="false">地上</button><button data-floor="B1" aria-pressed="true">地下1階</button><button data-floor="B2" aria-pressed="false">地下2階</button>
+  </div>
+  <div class="seg" role="group" aria-label="場所">
+    <button data-area="marunouchi" aria-pressed="false">丸の内側</button><button data-area="yaesu" aria-pressed="false">八重洲側</button>
+  </div>
+  <button class="chip" id="tExits" aria-pressed="false">出口一覧</button>
+  <div class="search"><input id="q" type="search" placeholder="建物・出口番号を探す" aria-label="建物・出口番号を探す" autocomplete="off"><ul id="results" role="listbox"></ul></div>
+</div>
+<div id="labels"></div>
+<div id="schemB2">地下2階：丸ノ内線の線路（赤の点線）とホームの縁（紫の点線）は <b>概略</b>。OpenStreetMap の線で、実際の位置は未確認です。屋内地図に地下2階の丸ノ内線は入っていません。</div>
+<div id="schem"><span class="short">3D の階の間隔・箱の高さは模式（実際の深さではない）。丸ノ内線のホーム・線路は概略・位置未確認</span><span class="long">3D の階の上下の間隔（12 m おき）と、通路・部屋の箱の高さ（3 m）は模式。屋内地図には高さが無いため、実際の深さ・天井の高さではありません。青い地下通路（八重洲側）だけは実際の標高なので、屋内地図の階と上下の位置を比べないでください。いちばん下の赤と紫の点線（丸ノ内線の線路・ホーム）は OpenStreetMap の概略で、位置は未確認です。</span></div>
+<div id="compass" aria-label="方位"><span id="compassN">北<br>▲</span></div>
+<div id="exitPanel" aria-label="出口一覧"></div>
+<div class="legend" id="legend">
+  <button id="legendBtn" aria-expanded="false">凡例 ▾</button>
+  <div id="legendBody">
+  <div><b>屋内地図（選んだ階）</b></div>
+  <div><i style="background:#9fd9b0"></i>通路・コンコース</div>
+  <div><i style="background:#f0a57a"></i>階段・エスカレーター・EV</div>
+  <div><i style="background:#f1e3bf"></i>店・部屋</div>
+  <div><i style="background:#c62828;border-radius:6px"></i>出口の原資料点（赤＝1F／白＝B1。実際の開口・接続点かは未確認）</div>
+  <div><i style="border-top:2px dashed #c62828;background:none;height:0;width:12px"></i>3D：同じ出口の両端の印（経路ではない）</div>
+  <div><i style="background:#0b3d91"></i>改札（緑＝JR）</div>
+  <div><i style="background:#f3e8ff;border:1px solid #5b2a86"></i>建物の入口</div>
+  <div><i style="border:2px dashed #1565c0;background:none;border-radius:6px;width:10px;height:10px"></i>出口の候補（OSM・未確認）</div>
+  <div><i style="background:#fff3e0;border:2px solid #e0662b"></i>八重洲側の地下出入口（PLATEAU 都市設備。点線＝地下街の階段とは重ならない。番号は未確認）</div>
+  <div><span style="color:#c62828;font-weight:700;margin-right:6px">➤</span>出口を出たあと向く方角（推定。薄い＝確度低）</div>
+  <div><i style="border-top:2px dashed #d32f2f;background:none;height:0;width:12px"></i>概略：丸ノ内線の線路・ホーム（OSM）</div>
+  <div><b>国交省 歩行空間ネットワーク（2019年・地上だけ）</b></div>
+  <div><i style="background:#00796b;height:4px;vertical-align:3px"></i>歩ける道（点線＝横断歩道・標示のない横断部）　<i style="background:#26a69a;height:4px;vertical-align:3px;margin-left:4px"></i>建物の中の通路</div>
+  <div><b>PLATEAU</b></div>
+  <div><i style="background:#ece6da"></i>駅などの敷地（土地利用：交通施設用地）</div>
+  <div><i style="background:#e6e8ec"></i>道路用地（土地利用）　<i style="background:#d9dde2;margin-left:4px"></i>車道　<i style="background:#f4f1ea;margin-left:4px;border:1px solid #ccc"></i>歩道</div>
+  <div><i style="background:#d7ead2"></i>公園・広場（土地利用：公共空地）　<i style="background:#cfe1f2;margin-left:4px"></i>水面</div>
+  <div><i style="background:#2f7fd8"></i>八重洲側の地下通路（実際の標高）</div>
+  <div><i style="background:#b9c0c8"></i>地上の建物</div>
+  </div>
+</div>
+<div id="card" role="dialog" aria-live="polite"><button id="cardClose" aria-label="閉じる">×</button><div id="cardBody"></div></div>
+<div class="foot" id="foot"><span><a href="../sources.html">出典・未確認箇所</a> ／ <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a> (<a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL</a>)。出口点の物理的な意味・精度は未確認。非公式の試作。国交省の PLATEAU・東京駅周辺屋内地図（2020年作成）・歩行空間ネットワーク（2019年時点・地上だけ）を加工。ホームは概略、出口を出たあとの向きは一部だけ推定。</span> <button id="footMore" aria-expanded="false">詳しく</button><span id="footFull" hidden><br>非公式の試作。「3D都市モデル（Project PLATEAU）」の建物・地下街・道路・土地利用・都市設備と、「東京駅周辺屋内地図オープンデータ（令和2年度更新版）」「歩行空間ネットワークデータ（東京駅周辺）」（いずれも国土交通省）を加工。歩ける道は2019年時点・地上だけ。屋内地図は2020年作成で、現在の駅と違う所がありうる。丸ノ内線のホームと線路（地下2階）は OpenStreetMap の概略で、位置は未確認。出口の番号と行き先は東京メトロ構内図（図 2026.4現在）による。出口 M4〜M7 の向きは屋内地図の形からの推定で、現地では未確認。M1〜M3・M8・M11〜M14 は位置の資料が無い。緑の「歩ける道」は国交省のデータが歩けるとしている地上の道で、「不明」とされた道は描いていない。地下の道と、出口から先の道順は描いていない（3D の赤い点線は同じ出口の地下側と地上側を結んだ印で、経路ではない）。© OpenStreetMap contributors。</span></div>
+<script type="module" src="./app.js?v=1eaf2eb96152"></script>
+</body>
+</html>
