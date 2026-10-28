@@ -1,0 +1,166 @@
+{
+  "version": "rev-03",
+  "public_url": "https://hidenaka.github.io/construction-notice-ai-brief/reports/tokyo-station/rev-03/",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 4897,
+      "sha256": "5d1166b5a5fa06df25b1808a46bfbd5a457d20c15fc3ad83d046dd5fe194e88f"
+    },
+    {
+      "path": "map/app.js",
+      "bytes": 52152,
+      "sha256": "95a4ea5143feac236884de2bea82adaf35113c83699e10049faa23d79abbd83c"
+    },
+    {
+      "path": "map/batch.mjs",
+      "bytes": 1305,
+      "sha256": "fc0c4ab0f7abf9b14aad9cb87f69fa0de9356de1052c63bbd210d72a2da44e17"
+    },
+    {
+      "path": "map/data/ground.json",
+      "bytes": 6249505,
+      "sha256": "ef73c7bde5cba35b8f021214d4a53897996e158fb2daa4a76f324ee43eaa6333"
+    },
+    {
+      "path": "map/data/indoor.json",
+      "bytes": 1038122,
+      "sha256": "ff4a674fd960bba486bfc9485d3f5fcba389cf611bfe6f927bc81ecf6ec7b662"
+    },
+    {
+      "path": "map/data/network.json",
+      "bytes": 202155,
+      "sha256": "5c9a239d066151213315887cd0d9e29d3a492f6691bbe2a791e473f5df26b251"
+    },
+    {
+      "path": "map/data/overlay.json",
+      "bytes": 55150,
+      "sha256": "3ff87a2f430465b795aa7c45acceef7325de37754c81556a9dbf121fd9017325"
+    },
+    {
+      "path": "map/data/scene.json",
+      "bytes": 1872843,
+      "sha256": "7c451c75ad09ed09061eb728a118f9a60cfcd4db82c1575fff839a181db45245"
+    },
+    {
+      "path": "map/data/schematic.json",
+      "bytes": 3048,
+      "sha256": "4ca99ab918c17f2b46977118b1dbd5b4964ecaeb984f02ee31929939071811de"
+    },
+    {
+      "path": "map/frame.mjs",
+      "bytes": 208,
+      "sha256": "f5720e68a20c6f0b81d54da4d239958dbe557110d57f477d977e3a668c05c3f0"
+    },
+    {
+      "path": "map/gesture.mjs",
+      "bytes": 711,
+      "sha256": "c101e83188c92462d83d20a0a479173b0b1390b1c4d9b227ac291e55896ab9c8"
+    },
+    {
+      "path": "map/index.html",
+      "bytes": 15358,
+      "sha256": "30b2d10363d4c7231ae7ef2d445ee907b07d46615e0b286e6cd113752509dbf8"
+    },
+    {
+      "path": "map/mobile.css",
+      "bytes": 6368,
+      "sha256": "afa7dd67c25f264d8e43cca6e8eccc4211e45f8d6f1f394712f0b17334925d8a"
+    },
+    {
+      "path": "map/mobile.js",
+      "bytes": 9927,
+      "sha256": "53cbe7adc9c957ffb29db90f3ee577fbc47543e04a7ebf6e755390630f9bd3a1"
+    },
+    {
+      "path": "map/motion.mjs",
+      "bytes": 685,
+      "sha256": "7f7c90d157899b6b6c00158958d1d5a675db894781ddba8ee569b717855b728b"
+    },
+    {
+      "path": "map/profile.mjs",
+      "bytes": 2656,
+      "sha256": "79e5374149a347944252ed464e263f72bac8dee361589b1638ba80e559aed2da"
+    },
+    {
+      "path": "map/vendor/OrbitControls.js",
+      "bytes": 33206,
+      "sha256": "548ef83a43f42966f224731bf57b5fc2564c0fc0ab37f222dd09b2601fd9a221"
+    },
+    {
+      "path": "map/vendor/three-LICENSE.txt",
+      "bytes": 1081,
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "path": "map/vendor/three.module.min.js",
+      "bytes": 670681,
+      "sha256": "3e690ac7d180b0aadf0891bea39eec643e29e2d3e75c99b18689518665f69ba6"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 1016717,
+      "sha256": "59e86680f0acdb01967b54cd7c4fcfbee6585ff8932cad8a6811cfec7f602389"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 2017436,
+      "sha256": "df40e0159d171f2a8823fcc4f24ee3185d54c54bb3ea4979fae68ce492c16c85"
+    },
+    {
+      "path": "media/report.srt",
+      "bytes": 356,
+      "sha256": "a310f5fbcf8216656a9604b3c6e1962d50f05491de638119eba3d1a47fff44b9"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 348,
+      "sha256": "300b0078d7d5d2e65717ff948d5698a78b4a2badd60bc3c5365b80792b7e3398"
+    },
+    {
+      "path": "report/index.html",
+      "bytes": 6190,
+      "sha256": "1e801152a95ca813ef53274822ebee9b0514ae3c67d27461ba93ee2eedd03796"
+    },
+    {
+      "path": "report/media/map-2d.png",
+      "bytes": 164585,
+      "sha256": "d98000352ac5b33340d5be1209f89c8f39a042dfd5c89f2926f99dfb2d1bedd5"
+    },
+    {
+      "path": "report/media/map-3d.png",
+      "bytes": 161688,
+      "sha256": "b109fe09d2be20dcc4684aa9783865f64ff0938f2579ee6b38c72aea72916609"
+    },
+    {
+      "path": "report/media/map-phone.png",
+      "bytes": 69117,
+      "sha256": "162a32c63faa7b73a9966eae110737bbd0f3b6a7f44ed6d299174c8242e77d74"
+    },
+    {
+      "path": "report/media/poster.png",
+      "bytes": 575981,
+      "sha256": "901d79a88284fc29303d184b7922c4b5c9a5e6e98880e6bb367306965b7188d6"
+    },
+    {
+      "path": "report/media/report.mp4",
+      "bytes": 3037452,
+      "sha256": "29448f14062e36159f131b3bfd62c58064d2942d2e0f6669b25294d5c3754f7b"
+    },
+    {
+      "path": "report/media/report.srt",
+      "bytes": 989,
+      "sha256": "06de776cf5205f8a22757fde3da2889632d48a8db4dd37adbab59e4fd2373ff5"
+    },
+    {
+      "path": "report/media/report.vtt",
+      "bytes": 949,
+      "sha256": "6f748d10cd5be01949c463af76a33c1ecb2a8f133681347c82c9b5e783386991"
+    },
+    {
+      "path": "sources.html",
+      "bytes": 7324,
+      "sha256": "b0051cc11fbf329757c37d8eb74aaaf4ef0c09e0aa3469849b9bb2282c67ad7d"
+    }
+  ]
+}
