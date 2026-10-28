@@ -86,7 +86,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
 @media (max-width:600px){ #schem .short{display:inline} #schem .long{display:none} #schem{top:auto;bottom:calc(64px + env(safe-area-inset-bottom));font-size:12px} body.has-card #schem{bottom:auto;top:calc(176px + env(safe-area-inset-top))} #compass{top:calc(130px + env(safe-area-inset-top))} .legend{top:calc(176px + env(safe-area-inset-top));bottom:auto} #exitPanel{top:calc(140px + env(safe-area-inset-top));max-height:calc(100vh - 280px)}  .title{font-size:13px;padding:6px 8px} .seg button,.chip{padding:6px 10px;font-size:13px} .bar{gap:5px} .foot{font-size:10.5px} }
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
-<link rel="stylesheet" href="./mobile.css">
+<link rel="stylesheet" href="./mobile.css?v=ad02828287f8">
 </head>
 <body>
 <div id="view" aria-label="地図"></div>
@@ -139,6 +139,6 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
 </div>
 <div id="card" role="dialog" aria-live="polite"><button id="cardClose" aria-label="閉じる">×</button><div id="cardBody"></div></div>
 <div class="foot" id="foot"><span><a href="../sources.html">出典・未確認箇所</a> ／ <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a> (<a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL</a>)。出口点の物理的な意味・精度は未確認。非公式の試作。国交省の PLATEAU・東京駅周辺屋内地図（2020年作成）・歩行空間ネットワーク（2019年時点・地上だけ）を加工。ホームは概略、出口を出たあとの向きは一部だけ推定。</span> <button id="footMore" aria-expanded="false">詳しく</button><span id="footFull" hidden><br>非公式の試作。「3D都市モデル（Project PLATEAU）」の建物・地下街・道路・土地利用・都市設備と、「東京駅周辺屋内地図オープンデータ（令和2年度更新版）」「歩行空間ネットワークデータ（東京駅周辺）」（いずれも国土交通省）を加工。歩ける道は2019年時点・地上だけ。屋内地図は2020年作成で、現在の駅と違う所がありうる。丸ノ内線のホームと線路（地下2階）は OpenStreetMap の概略で、位置は未確認。出口の番号と行き先は東京メトロ構内図（図 2026.4現在）による。出口 M4〜M7 の向きは屋内地図の形からの推定で、現地では未確認。M1〜M3・M8・M11〜M14 は位置の資料が無い。緑の「歩ける道」は国交省のデータが歩けるとしている地上の道で、「不明」とされた道は描いていない。地下の道と、出口から先の道順は描いていない（3D の赤い点線は同じ出口の地下側と地上側を結んだ印で、経路ではない）。© OpenStreetMap contributors。</span></div>
-<script type="module" src="./app.js"></script>
+<script type="module" src="./app.js?v=ad02828287f8"></script>
 </body>
 </html>

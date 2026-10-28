@@ -2,8 +2,8 @@
 // 表示データ: data/scene.json（scripts/claude-integration/build_app_data.py が PLATEAU 原 CityGML から生成）
 // 座標: x=東(m), y=北(m), z=TP標高(m)。2D と 3D は同じ座標・同じ地物 ID を使い、高さの誇張はしない。
 import * as THREE from 'three';
-import { TapGuard } from './gesture.mjs';
-import { installMobileUI } from './mobile.js';
+import { TapGuard } from './gesture.mjs?v=ad02828287f8';
+import { installMobileUI } from './mobile.js?v=ad02828287f8';
 let mobileUI;
 import { OrbitControls } from './vendor/OrbitControls.js';
 

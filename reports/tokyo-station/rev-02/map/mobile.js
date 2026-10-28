@@ -1,4 +1,4 @@
-import { TapGuard } from './gesture.mjs';
+import { TapGuard } from './gesture.mjs?v=ad02828287f8';
 
 export function installMobileUI(api) {
   const { THREE, controls, state, saveHash, resize, visibleHeight, setMode } = api;
@@ -48,10 +48,15 @@ export function installMobileUI(api) {
     const open=document.body.classList.toggle('details-open');detail.textContent=open?'畳む':'詳細';detail.setAttribute('aria-expanded',String(open));
   });detail.id='mobile-detail';detail.setAttribute('aria-expanded','false');
   cardBar.append(cardTitle,detail);$('#card').prepend(cardBar);
-  new MutationObserver(()=>{
-    cardTitle.textContent=$('#cardBody h2')?.textContent||'選択した場所';
+  const collapseDetails=()=>{
     document.body.classList.remove('details-open');detail.textContent='詳細';detail.setAttribute('aria-expanded','false');
+  };
+  new MutationObserver(()=>{
+    cardTitle.textContent=$('#cardBody h2')?.textContent||'選択した場所';collapseDetails();
   }).observe($('#cardBody'),{childList:true});
+  new MutationObserver(()=>{
+    if(!document.body.classList.contains('has-card')&&document.body.classList.contains('details-open'))collapseDetails();
+  }).observe(document.body,{attributes:true,attributeFilter:['class']});
   cardTitle.textContent=$('#cardBody h2')?.textContent||'選択した場所';
   const exitClose=button('閉じる','出口一覧を閉じる',()=>$('#tExits').click());exitClose.id='mobile-exit-close';$('#exitPanel').prepend(exitClose);
   $('#tExits').addEventListener('click',closePanels);
@@ -67,10 +72,12 @@ export function installMobileUI(api) {
       const rotating=state.mode==='3d'&&rotate;
       controls.touches.ONE=rotating?THREE.TOUCH.ROTATE:THREE.TOUCH.PAN;
       controls.mouseButtons.LEFT=rotating?THREE.MOUSE.ROTATE:THREE.MOUSE.PAN;
+      controls.screenSpacePanning=state.mode!=='3d'; // Keep 3D translation on the XY map plane.
       controls.rotateSpeed=.65;
     } else {
       controls.touches.ONE=state.mode==='3d'?THREE.TOUCH.ROTATE:THREE.TOUCH.PAN;
       controls.mouseButtons.LEFT=state.mode==='3d'?THREE.MOUSE.ROTATE:THREE.MOUSE.PAN;
+      controls.screenSpacePanning=true;
       controls.rotateSpeed=1;closePanels();
     }
   }

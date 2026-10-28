@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "index.html",
-      "bytes": 4545,
-      "sha256": "f7fd561fbe35a7a4747f87ed86be356856e87c056a766229573c9c1b9570856c"
+      "bytes": 4560,
+      "sha256": "49ba59ce2fcf50e9fbff12b03e653abed64b045ec2359f8a57663905cad0856a"
     },
     {
       "path": "map/app.js",
-      "bytes": 50756,
-      "sha256": "47389ff8acc66de676d0c6b11d6a221860a254b45f179318b93cb9e3314bd3f5"
+      "bytes": 50786,
+      "sha256": "16816e003c2980624c0908b8b683d16fd4e8a30c62da70b5d4d035a217ec593f"
     },
     {
       "path": "map/data/ground.json",
@@ -49,18 +49,18 @@
     },
     {
       "path": "map/index.html",
-      "bytes": 15328,
-      "sha256": "a16ed3c9cab1d652200cde002038ebeb8a9639c510e88072051717ab88601d1b"
+      "bytes": 15358,
+      "sha256": "a3cd89485a129833a82176c8d2120489688c26cf9a7950ca027291e4ba4c0b2f"
     },
     {
       "path": "map/mobile.css",
-      "bytes": 6323,
-      "sha256": "1602dc4eb5edf02811eaf7116ea10cf213f76fda1120b079dc5c6d56d8618ae7"
+      "bytes": 6368,
+      "sha256": "afa7dd67c25f264d8e43cca6e8eccc4211e45f8d6f1f394712f0b17334925d8a"
     },
     {
       "path": "map/mobile.js",
-      "bytes": 8135,
-      "sha256": "cc0cf7f437a738e648eafa0ad74fd4b981d738a74c71014043eb9b49018e1d90"
+      "bytes": 8564,
+      "sha256": "7f7dadcfd24a66e98855557d0cddba3417a93b113d4b4c2efeaa6ff3e0bb0647"
     },
     {
       "path": "map/vendor/OrbitControls.js",
@@ -79,23 +79,23 @@
     },
     {
       "path": "media/poster.png",
-      "bytes": 929718,
-      "sha256": "ac088518c111c9f0204e2235f0c5f506a8f62454d9949576f8b3300ea7b5e4cf"
+      "bytes": 933817,
+      "sha256": "d61682c29435ef8fe2ebb9ccf27307cde0238bc8e7dd1d0dea1fb43c4ec52a24"
     },
     {
       "path": "media/report.mp4",
-      "bytes": 1209966,
-      "sha256": "a32cab5aa6bcf4c24817bed3f81bd109eb140f000185b8aa0a61cc6356cc406e"
+      "bytes": 1222611,
+      "sha256": "a910d3978101e654af6f31861bb0864c195bdac3110f468ffdb750c2b5dd0c5c"
     },
     {
       "path": "media/report.srt",
-      "bytes": 349,
-      "sha256": "f8d18897e3a4a53f1587b4821aa236f2fcac4b7afaf9519eba830f3ebf6cd203"
+      "bytes": 328,
+      "sha256": "04a57147386782dcadb784d781890de5671b1a4ab7ab34364914ba642064ac9a"
     },
     {
       "path": "media/report.vtt",
-      "bytes": 341,
-      "sha256": "ef52571529ccf11a088bdf4d219273a93a0338c2d1dfbe3c951e12399388f343"
+      "bytes": 320,
+      "sha256": "244a4c7a8668d6b3e5e50a01ce4d1ae7c04a6febaae5254a64115eb052c2cfa0"
     },
     {
       "path": "report/index.html",
