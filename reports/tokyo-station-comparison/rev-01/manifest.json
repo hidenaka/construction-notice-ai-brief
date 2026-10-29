@@ -1,0 +1,91 @@
+{
+  "version": "rev-01",
+  "public_url": "https://hidenaka.github.io/construction-notice-ai-brief/reports/tokyo-station-comparison/rev-01/",
+  "files": [
+    {
+      "path": "images/A-closeup.png",
+      "bytes": 45118,
+      "sha256": "6a937095ebad10a970b1090d386ba3faea9cf1b10f1356740bb5510571e8ff43"
+    },
+    {
+      "path": "images/A-desktop-3d.png",
+      "bytes": 263918,
+      "sha256": "7db799b577ff862dc54c1e439e8dc016d9d92d224111829a9ca94a03cc9a1c13"
+    },
+    {
+      "path": "images/A-entrance-detail.png",
+      "bytes": 74677,
+      "sha256": "91547bcef85af4dce36b88962d484ed9c3b275e6e72240915a6d538563dbeaf6"
+    },
+    {
+      "path": "images/A-mobile-2d.png",
+      "bytes": 71329,
+      "sha256": "3477b5bf5008d81ac6f73aeb5a01a87055155d1dcfbd924f28b81f568fb6a058"
+    },
+    {
+      "path": "images/A-mobile-m4.png",
+      "bytes": 76944,
+      "sha256": "d8f700e9ab1f52c2600f7aedd4bd39a19b4f542db386868ba0421a6b93865a16"
+    },
+    {
+      "path": "images/A-route.png",
+      "bytes": 83488,
+      "sha256": "7d920d5712af4cbf2246c714e3d6c321f12fd998471be808ba0393a8cdced1c5"
+    },
+    {
+      "path": "images/A-search-obscured.png",
+      "bytes": 79258,
+      "sha256": "71918eca9ff738529be1df20127a09900794a20f74898116194ae5f1da16d014"
+    },
+    {
+      "path": "images/B-closeup.png",
+      "bytes": 34849,
+      "sha256": "025c3d2dc2b44aa52eb1ab5ed8e3eb93cb1991786da4894a10fcad3b845b79ff"
+    },
+    {
+      "path": "images/B-desktop-3d.png",
+      "bytes": 211677,
+      "sha256": "74a5f23ea4c2be751a41fae0ed51b357f7dc58fdf8209ce0c42a6b99db2043ea"
+    },
+    {
+      "path": "images/B-entrance-detail.png",
+      "bytes": 57808,
+      "sha256": "3757ad74e7c4ca766521fd60ade905b0fc7a06b38982aafc40da29302e1e7ab0"
+    },
+    {
+      "path": "images/B-mobile-2d.png",
+      "bytes": 60994,
+      "sha256": "ea244dfff14b448ada5e29e2c8610fe454a1b5d9db5d02e3738054e0e530d562"
+    },
+    {
+      "path": "images/B-mobile-m4.png",
+      "bytes": 62858,
+      "sha256": "c6669aa9c6db16433f4b863ad33dbbb26e1754361dce2ab43ec38d81f02c8370"
+    },
+    {
+      "path": "index.html",
+      "bytes": 17207,
+      "sha256": "81a63306c11e23e922bdd91b490f22f1fec4cae4b4b205b2c3601fea1468d75b"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 945126,
+      "sha256": "ec9b9e806ff3843314a3d4a0362ad3a3f0fbdba75e74c9d334ef5249b5b3ea41"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 3607995,
+      "sha256": "d163818021dafaa422e388f3cd6a0ff63224617d085f6ac21504f9f38842fcb9"
+    },
+    {
+      "path": "media/report.srt",
+      "bytes": 560,
+      "sha256": "3f82351c9049ed048adb3f3af2314e056333b06cb0c7cb71e63640b9dbf909ca"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 544,
+      "sha256": "bdeb816258be3a5293606e619e288ac20c4f53d4c0bbd14a80d2ec39ff0bfa3f"
+    }
+  ]
+}
