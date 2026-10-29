@@ -1,0 +1,1806 @@
+{
+ "meta": {
+  "generator": "scripts/claude-integration/build_overlay.py",
+  "inputs": [
+   {
+    "file": "landmarks.json",
+    "sha256": "a5d6aac284ed4b4697592019d9f73a3318753329ddb8ba715244fdc420431ebf"
+   },
+   {
+    "file": "metro-m17-exits.json",
+    "sha256": "b45aa88470fc937b85615dcbd53d6e6d9fbfbd364a6dcd357c9f6a2947f8a3b0"
+   },
+   {
+    "file": "subway-entrances-2026-10-26.json",
+    "sha256": "1a2146e370244ad5ae6c5c929e75b25d2e780cec05090aa7112b02590767ad63"
+   },
+   {
+    "file": "indoor.json",
+    "sha256": "ff4a674fd960bba486bfc9485d3f5fcba389cf611bfe6f927bc81ecf6ec7b662"
+   },
+   {
+    "file": "plateau-frn-53394611-entrance-hints.json",
+    "sha256": "d751c9b3c4e95772d0405551afdf227ededd6c3634ab66db86a61fb5682f8548"
+   },
+   {
+    "file": "yaechika-exits.json",
+    "sha256": "dd67940d3009105ec62ac706db18dbcf73b4624fefd55466af0454bf86626a2f"
+   }
+  ],
+  "osm_timestamp": "2026-10-26T21:14:22Z",
+  "osm_attribution": "© OpenStreetMap contributors（ODbL）"
+ },
+ "landmarks": [
+  {
+   "id": "lm-marubiru",
+   "label": "丸ビル",
+   "aliases": [
+    "丸ビル",
+    "丸の内ビルディング",
+    "まるびる"
+   ],
+   "plateau_ids": [
+    "bldg_a98349a1-56c0-4ec4-b22c-abe49301bd04"
+   ],
+   "plateau_name": "丸の内ビルディング",
+   "name_match": {
+    "status": "two_sources",
+    "basis": "PLATEAU の建物名と、国交省屋内地図の施設フォルダ（3.丸ビル・4.新丸ビル）の1階の外形が 2〜5 m で重なる。国土地理院の航空写真でも外形の位置が合う（2026-10-27）"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-shinmarubiru",
+   "label": "新丸ビル",
+   "aliases": [
+    "新丸ビル",
+    "新丸の内ビルディング",
+    "しんまるびる"
+   ],
+   "plateau_ids": [
+    "bldg_104b6adf-6a30-41d4-9bdc-dc866513368e"
+   ],
+   "plateau_name": "新丸の内ビルディング",
+   "name_match": {
+    "status": "two_sources",
+    "basis": "PLATEAU の建物名と、国交省屋内地図の施設フォルダ（3.丸ビル・4.新丸ビル）の1階の外形が 2〜5 m で重なる。国土地理院の航空写真でも外形の位置が合う（2026-10-27）"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-jptower",
+   "label": "JPタワー（KITTE）",
+   "aliases": [
+    "KITTE",
+    "キッテ",
+    "KITTE丸の内",
+    "JPタワー",
+    "東京中央郵便局"
+   ],
+   "plateau_ids": [
+    "bldg_f0028aa3-e666-4608-8b70-4e981a45d6b5"
+   ],
+   "plateau_name": "JPタワー",
+   "name_match": {
+    "status": "candidate",
+    "basis": "PLATEAU の建物名は JPタワー。KITTE だけの外形はデータに無い。KITTE 公式の住所（丸の内二丁目7番2号）と同じ敷地と見ているが、建物内の範囲は未確認"
+   },
+   "facts": [
+    {
+     "text": "KITTE 公式のアクセス欄に「丸ノ内線東京駅　地下道より直結」とある。どの通路・どの出口でつながるかは書かれていない",
+     "status": "official_text_only",
+     "source": "https://marunouchi.jp-kitte.jp/guide/access.jsp",
+     "checked": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "lm-gt-north",
+   "label": "グラントウキョウ ノースタワー",
+   "aliases": [
+    "グラントウキョウノースタワー",
+    "ノースタワー",
+    "グラントウキョウ"
+   ],
+   "plateau_ids": [
+    "bldg_b5b4d7d4-a078-4ca9-8ec3-87e5bdc63cde"
+   ],
+   "plateau_name": "グラントウキョウ  ノースタワー",
+   "name_match": {
+    "status": "two_sources",
+    "basis": "PLATEAU の名前と、OpenStreetMap の建物名（外形の中の点）が一致"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-gt-south",
+   "label": "グラントウキョウ サウスタワー",
+   "aliases": [
+    "グラントウキョウサウスタワー",
+    "サウスタワー"
+   ],
+   "plateau_ids": [
+    "bldg_cbea6733-379b-4490-b641-a1e68192107d"
+   ],
+   "plateau_name": "グラントウキョウサウスタワー",
+   "name_match": {
+    "status": "two_sources",
+    "basis": "PLATEAU の名前と、OpenStreetMap の建物名が一致（前回「取り違えの疑い」と書いたが、照合で否定された）"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-midtown-yaesu",
+   "label": "東京ミッドタウン八重洲（候補）",
+   "aliases": [
+    "東京ミッドタウン八重洲",
+    "ミッドタウン八重洲",
+    "区立城東小学校"
+   ],
+   "plateau_ids": [
+    "bldg_25d370de-2c35-457b-b756-3444a3d02eb3"
+   ],
+   "plateau_name": "区立城東小学校",
+   "name_match": {
+    "status": "candidate",
+    "basis": "PLATEAU の名前は「区立城東小学校」（入居施設の名前と見られる）。建物名は OpenStreetMap の名前で、公式資料では未確認"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-tekko",
+   "label": "鉄鋼ビルディング（候補）",
+   "aliases": [
+    "鉄鋼ビルディング",
+    "鉄鋼ビル"
+   ],
+   "plateau_ids": [
+    "bldg_b3f4c119-7707-45c7-8e97-e49844071eed"
+   ],
+   "plateau_name": null,
+   "name_match": {
+    "status": "candidate",
+    "basis": "PLATEAU に名前が無い。OpenStreetMap の建物名だけ"
+   },
+   "facts": []
+  },
+  {
+   "id": "lm-granroof",
+   "label": "グランルーフ（候補）",
+   "aliases": [
+    "グランルーフ"
+   ],
+   "plateau_ids": [
+    "bldg_b3bff028-8dc1-4887-8895-3b37524b7226"
+   ],
+   "plateau_name": null,
+   "name_match": {
+    "status": "candidate",
+    "basis": "PLATEAU に名前が無い。OpenStreetMap の名前だけ"
+   },
+   "facts": []
+  }
+ ],
+ "not_labeled": [
+  {
+   "plateau_name": "東京駅",
+   "count": 4,
+   "reason": "同じ名前の外形が4つ重なっていて、どれが丸の内駅舎かを照合していない。検索では4つとも出すが、地図に「丸の内駅舎」とは書かない"
+  }
+ ],
+ "station": {
+  "id": "metro-m17",
+  "name": "東京メトロ丸ノ内線 東京駅",
+  "code": "M17",
+  "operator": "東京メトロ"
+ },
+ "exit_source": {
+  "page": "https://www.tokyometro.jp/station/tokyo/yardmap/index_print.html",
+  "figure": "https://www.tokyometro.jp/station/yardmap_img/figure_yardmap_tokyo_all.jpg",
+  "figure_date_text": "2026.4現在",
+  "page_date_text": "改定日：2018年11月",
+  "date_note": "図とページ本文の日付が食い違う。図の日付を新しい方として記録し、両方を残す",
+  "viewed": "2026-10-27",
+  "method": "アプリ内ブラウザで閲覧し目視で書き写した。画像は保存していない。転載・トレースの許可は未確認なので、図形は使わず文字情報だけを持つ",
+  "copyright": "Copyright © Tokyo Metro Co., Ltd"
+ },
+ "exit_notes": [
+  "M7 はページ本文では「新丸ビル」。立体図では M4・M5/M6 の並びにあり、M9（新丸ビル）とは離れて描かれている。本文の文言をそのまま持つ",
+  "M10 の * は「時間制限があります」の印（ページ本文）。時間帯は書かれていない",
+  "M10 の行き先「東京メトロ大手町駅」は別の駅。この一覧では大手町駅の出口番号を持たない",
+  "M11〜M14 が立体図で「JR線」の矢印の先にあることは、JR の改札名と同じ意味ではない"
+ ],
+ "exits": [
+  {
+   "id": "M1",
+   "toward": [
+    "丸の内南口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 1,
+   "figure_group": "M1-M3（丸の内南口方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M2",
+   "toward": [
+    "丸の内南口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 1,
+   "figure_group": "M1-M3（丸の内南口方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M3",
+   "toward": [
+    "丸の内南口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 1,
+   "figure_group": "M1-M3（丸の内南口方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [
+     {
+      "osm_node": 12511945182,
+      "lat": 35.6803167,
+      "lon": 139.7637025,
+      "x": -307.6,
+      "y": -98.0,
+      "name": "東京駅"
+     }
+    ],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M4",
+   "toward": [
+    "丸ビル"
+   ],
+   "elevator_to_ground": true,
+   "time_limited": false,
+   "order_in_figure": 2,
+   "figure_group": "M4",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -265.02,
+    "y": 32.55,
+    "mlit_id": "mlit_f478e80858514fa8b8af5ba4f8841989",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "indoor_map",
+    "x": -256.83,
+    "y": 29.95,
+    "mlit_id": "mlit_4be895b550594bb5a7058461a42233ed",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "estimated",
+    "confidence": "medium",
+    "bearing": 108,
+    "label": "東南東",
+    "basis": "屋内地図の細長い階段の区画（長さ 9 m・幅 2 m）の向きと、出口の2点の並びが合う",
+    "note": "推定。現地・公式図では未確認。地上に出たあと向きを変える場所があるかは分からない",
+    "from_points": [
+     "mlit_f478e80858514fa8b8af5ba4f8841989",
+     "mlit_4be895b550594bb5a7058461a42233ed"
+    ]
+   }
+  },
+  {
+   "id": "M5",
+   "toward": [
+    "二重橋前駅"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 3,
+   "figure_group": "M5・M6（二重橋前駅）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -346.14,
+    "y": 77.92,
+    "mlit_id": "mlit_1e09b05f08624d51be52a8d35ab61679",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "indoor_map",
+    "x": -350.09,
+    "y": 77.98,
+    "mlit_id": "mlit_4bccb9bd458f49ae9a28522f507fbf37",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "estimated",
+    "confidence": "low",
+    "bearing": 271,
+    "label": "西",
+    "basis": "屋内地図の出口の2点（地下側→地上側）の並びだけから",
+    "note": "推定。現地・公式図では未確認。地上に出たあと向きを変える場所があるかは分からない",
+    "from_points": [
+     "mlit_1e09b05f08624d51be52a8d35ab61679",
+     "mlit_4bccb9bd458f49ae9a28522f507fbf37"
+    ]
+   }
+  },
+  {
+   "id": "M6",
+   "toward": [
+    "二重橋前駅"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 3,
+   "figure_group": "M5・M6（二重橋前駅）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -310.94,
+    "y": 86.87,
+    "mlit_id": "mlit_8c6bb91fd1f545b98f493a33f7820c5c",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "indoor_map",
+    "x": -306.77,
+    "y": 88.0,
+    "mlit_id": "mlit_b00f5be9606e4087b4cb98a49dd9cac9",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "estimated",
+    "confidence": "low",
+    "bearing": 75,
+    "label": "東北東",
+    "basis": "屋内地図の出口の2点（地下側→地上側）の並びだけから",
+    "note": "推定。現地・公式図では未確認。地上に出たあと向きを変える場所があるかは分からない",
+    "from_points": [
+     "mlit_8c6bb91fd1f545b98f493a33f7820c5c",
+     "mlit_b00f5be9606e4087b4cb98a49dd9cac9"
+    ]
+   }
+  },
+  {
+   "id": "M7",
+   "toward": [
+    "新丸ビル"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 4,
+   "figure_group": "M7",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -245.67,
+    "y": 92.77,
+    "mlit_id": "mlit_646b4d8679df4816b95cf18e9fe64410",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "indoor_map",
+    "x": -237.46,
+    "y": 90.29,
+    "mlit_id": "mlit_05713bd3e7f34624a334baa90fbe1c97",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "estimated",
+    "confidence": "medium",
+    "bearing": 107,
+    "label": "東南東",
+    "basis": "屋内地図の細長い階段の区画（長さ 9 m・幅 2 m）の向きと、出口の2点の並びが合う",
+    "note": "推定。現地・公式図では未確認。地上に出たあと向きを変える場所があるかは分からない",
+    "from_points": [
+     "mlit_646b4d8679df4816b95cf18e9fe64410",
+     "mlit_05713bd3e7f34624a334baa90fbe1c97"
+    ]
+   }
+  },
+  {
+   "id": "M9",
+   "toward": [
+    "新丸ビル"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 5,
+   "figure_group": "M9（新丸ビル）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -202.72,
+    "y": 173.03,
+    "mlit_id": "mlit_21e09e324b6e4027ab483f2c45abe762",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M8",
+   "toward": [
+    "北口バスのりば"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 6,
+   "figure_group": "M8",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M10",
+   "toward": [
+    "東京メトロ大手町駅",
+    "大手町1・2丁目",
+    "丸の内オアゾ"
+   ],
+   "elevator_to_ground": true,
+   "time_limited": true,
+   "order_in_figure": 7,
+   "figure_group": "M10*（オアゾ方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "indoor_map",
+    "x": -162.84,
+    "y": 189.58,
+    "mlit_id": "mlit_e2337986024543c5a96cdde3567cbdc0",
+    "note": "国交省の屋内地図にある点。元は駅構内案内図の画像から作られ（同梱の記録）、精度は未検証"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [
+     {
+      "osm_node": 5415072318,
+      "lat": 35.6830306,
+      "lon": 139.7652324,
+      "x": -169.1,
+      "y": 203.1,
+      "name": "東京駅"
+     }
+    ],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M11",
+   "toward": [
+    "北口バスのりば"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 8,
+   "figure_group": "M11-M14（JR線方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M12",
+   "toward": [
+    "丸の内北口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 8,
+   "figure_group": "M11-M14（JR線方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [
+     {
+      "osm_node": 1928225293,
+      "lat": 35.6824486,
+      "lon": 139.7660656,
+      "x": -93.6,
+      "y": 138.5,
+      "name": "東京駅"
+     }
+    ],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M13",
+   "toward": [
+    "丸の内北口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 8,
+   "figure_group": "M11-M14（JR線方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  },
+  {
+   "id": "M14",
+   "toward": [
+    "丸の内北口"
+   ],
+   "elevator_to_ground": false,
+   "time_limited": false,
+   "order_in_figure": 8,
+   "figure_group": "M11-M14（JR線方面）",
+   "sign_position": {
+    "status": "unknown"
+   },
+   "underground_connection": {
+    "status": "unknown"
+   },
+   "ground_opening": {
+    "status": "unknown",
+    "osm_candidates": [
+     {
+      "osm_node": 7600432427,
+      "lat": 35.683586,
+      "lon": 139.7670914,
+      "x": -0.8,
+      "y": 264.7,
+      "name": null
+     }
+    ],
+    "osm_note": "OpenStreetMap の候補点。誰でも書き込める地図なので確認済みにしない"
+   },
+   "heading_after_exit": {
+    "status": "unknown",
+    "note": "地上側か地下側の点が無いので推定できない"
+   }
+  }
+ ],
+ "entrances": [
+  {
+   "id": "ent:mlit_262d3afaf3fc45c28ee789fba2613d76",
+   "building": "KITTE",
+   "name": "皇居外苑",
+   "floor": "1F",
+   "x": -240.58,
+   "y": -131.86,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_2cf6c16a43244a538a03bae03d461679",
+   "building": "KITTE",
+   "name": "JR東京駅",
+   "floor": "1F",
+   "x": -179.31,
+   "y": -134.08,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_6e35d40439c542baa6cbdc092218fc5d",
+   "building": "KITTE",
+   "name": "東京ビル有楽町駅",
+   "floor": "1F",
+   "x": -198.4,
+   "y": -190.82,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_f2ccb3b3727a4e37921e9e8c3b4f717e",
+   "building": "丸ビル",
+   "name": "大名小路東京駅側",
+   "floor": "1F",
+   "x": -265.17,
+   "y": -45.39,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_7433d339f53a4b41bb0ebcd038a5e889",
+   "building": "丸ビル",
+   "name": "丸の内仲通り皇居側",
+   "floor": "1F",
+   "x": -339.06,
+   "y": -26.22,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_3d117360546945c6b826b4cbe3bf74d0",
+   "building": "新丸ビル",
+   "name": "丸の内仲通り・皇居側",
+   "floor": "1F",
+   "x": -295.9,
+   "y": 138.94,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_4a07077d4db44973a905d8f6d85615d0",
+   "building": "新丸ビル",
+   "name": "大名小路・東京駅側",
+   "floor": "1F",
+   "x": -225.94,
+   "y": 119.33,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_0d464a6b56de4ade9965eab063d80ba9",
+   "building": "新丸ビル",
+   "name": "丸の内1st側",
+   "floor": "1F",
+   "x": -276.51,
+   "y": 190.77,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_600edec52b304942b64ab546e90a3577",
+   "building": "TOKIA",
+   "name": "JR東京駅方面",
+   "floor": "1F",
+   "x": -210.01,
+   "y": -253.14,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_ad250be9472e4e4598d11d67602e8fde",
+   "building": "TOKIA",
+   "name": "有楽町・東京国際フォーラム方面",
+   "floor": "1F",
+   "x": -218.45,
+   "y": -333.81,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -206.09,
+     -341.23
+    ],
+    [
+     -230.81,
+     -326.39
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_70389cf01820471f89ba1898870d93e0",
+   "building": "丸の内オアゾ",
+   "name": "JR東京駅方面",
+   "floor": "1F",
+   "x": -63.66,
+   "y": 237.6,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_6e8f4eeab5e24055a2ecd03046a78382",
+   "building": "丸の内オアゾ",
+   "name": "丸の内北口ビル",
+   "floor": "1F",
+   "x": -41.43,
+   "y": 282.25,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_2214d3fb88a340a0a5636b355bd3c11c",
+   "building": "丸の内オアゾ",
+   "name": "東京メトロ大手町駅方面",
+   "floor": "1F",
+   "x": -35.43,
+   "y": 338.62,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_15613ef518614d119e1fe6ae756af774",
+   "building": "丸の内オアゾ",
+   "name": "新丸の内センタービル",
+   "floor": "1F",
+   "x": -53.65,
+   "y": 295.76,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_9c5d9dd7ad5a4c0db15dd654b1f97309",
+   "building": "KITTE",
+   "name": "東京ビル 有楽町方面",
+   "floor": "B1",
+   "x": -167.65,
+   "y": -217.08,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_3d5fa4011f42459caeaee1338e19e2d3",
+   "building": "KITTE",
+   "name": "JR東京駅",
+   "floor": "B1",
+   "x": -195.46,
+   "y": -125.45,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_dd951c25c16f4979993efbf24f153d75",
+   "building": "丸ビル",
+   "name": "東京メトロ 千代田線二重橋前駅連絡口",
+   "floor": "B1",
+   "x": -340.87,
+   "y": -37.39,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_9df3070706294402bfe79ede1ad47d70",
+   "building": "丸ビル",
+   "name": "東京メトロ 丸ノ内線東京駅連絡口",
+   "floor": "B1",
+   "x": -259.79,
+   "y": -25.0,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_308d498749e446689f92bcf3540b796d",
+   "building": "丸ビル",
+   "name": "新丸ビル連絡口",
+   "floor": "B1",
+   "x": -253.25,
+   "y": 13.07,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -252.9,
+     18.62
+    ],
+    [
+     -253.6,
+     7.51
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_24ab9280dc4d4e38aaf5ebceece0b7e4",
+   "building": "丸ビル",
+   "name": "行幸通り地下通路・新丸ビル連絡口",
+   "floor": "B1",
+   "x": -320.39,
+   "y": 31.87,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -320.21,
+     37.15
+    ],
+    [
+     -320.58,
+     26.59
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_cb2d13119e214c248231c91e79b217c0",
+   "building": "丸ビル",
+   "name": "丸の内仲通り側",
+   "floor": "B1",
+   "x": -338.8,
+   "y": -6.09,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -337.72,
+     -6.38
+    ],
+    [
+     -339.87,
+     -5.8
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_0cc5746095c248b79fb058d997ac82f1",
+   "building": "新丸ビル",
+   "name": "日本工業倶楽部会館三菱UFJ信託銀行本店ビル連絡口",
+   "floor": "B1",
+   "x": -239.77,
+   "y": 199.54,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -270.76,
+     207.94
+    ],
+    [
+     -208.78,
+     191.14
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_ea15d2f277f54cd792b205d8559fea42",
+   "building": "新丸ビル",
+   "name": "行幸通り地下通路・丸ビル側",
+   "floor": "B1",
+   "x": -298.69,
+   "y": 116.2,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_d9787b4bf4844a68842f7b420ffe4b2a",
+   "building": "新丸ビル",
+   "name": "丸ビル連絡口",
+   "floor": "B1",
+   "x": -233.06,
+   "y": 98.41,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_40285b6849b841d29ca0f142aea29acf",
+   "building": "新丸ビル",
+   "name": "JR東京駅・東京メトロ丸ノ内線東京駅側",
+   "floor": "B1",
+   "x": -212.17,
+   "y": 146.03,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別",
+   "pts": [
+    [
+     -219.49,
+     118.52
+    ],
+    [
+     -204.85,
+     173.54
+    ]
+   ]
+  },
+  {
+   "id": "ent:mlit_ed1105dcb0bd418ba74896781dac5c3d",
+   "building": "新丸ビル",
+   "name": "東京海上日動ビル新館と直結（都営三田線大手町駅連絡）",
+   "floor": "B1",
+   "x": -291.35,
+   "y": 170.2,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_d8af40ff8c8d4652a30cff275b5c6a50",
+   "building": "丸の内オアゾ",
+   "name": "東京メトロ大手町駅方面",
+   "floor": "B1",
+   "x": -35.98,
+   "y": 336.79,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_729d38d95a064eafa6ea8526f5cad12f",
+   "building": "丸の内オアゾ",
+   "name": "JR東京駅方面",
+   "floor": "B1",
+   "x": -83.39,
+   "y": 187.68,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_8fff795023ff4b109f570245e0907266",
+   "building": "丸の内オアゾ",
+   "name": "東京メトロ丸ノ内線東京駅連絡口",
+   "floor": "B1",
+   "x": -152.44,
+   "y": 190.95,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  },
+  {
+   "id": "ent:mlit_0eb78612160b4d4a99121159501eec32",
+   "building": "KITTE",
+   "name": "JR京葉線",
+   "floor": "B2",
+   "x": -263.49,
+   "y": -174.94,
+   "status": "indoor_map",
+   "note": "建物の入口（屋内地図の施設出入口）。駅の出口番号とは別"
+  }
+ ],
+ "jr_exits": [
+  {
+   "id": "jr:mlit_022b514dfa534f0ba0ef1c3d07d77ea4",
+   "name": "日本橋口",
+   "floor": "1F",
+   "x": 167.32,
+   "y": 226.56,
+   "status": "indoor_map"
+  },
+  {
+   "id": "jr:mlit_8157a4738dae4025bb1f4237c5a2d8e6",
+   "name": "丸の内中央口",
+   "floor": "1F",
+   "x": -96.05,
+   "y": 40.63,
+   "status": "indoor_map"
+  }
+ ],
+ "stairs": [
+  {
+   "id": "st:mlit_b6632486585d4bd8b707de96d76e8acd",
+   "name": "L階段",
+   "floor": "1F",
+   "x": -350.19,
+   "y": 77.6,
+   "status": "indoor_map",
+   "note": "丸ノ内線東京駅のファイルにある名前付きの階段。どの出口・どこへの階段かは未確認"
+  },
+  {
+   "id": "st:mlit_0adffc91ce0840eab57979a8d8b58c7e",
+   "name": "K階段",
+   "floor": "1F",
+   "x": -306.88,
+   "y": 87.59,
+   "status": "indoor_map",
+   "note": "丸ノ内線東京駅のファイルにある名前付きの階段。どの出口・どこへの階段かは未確認"
+  },
+  {
+   "id": "st:mlit_557d4cd6be09462893d3e0d440149fca",
+   "name": "K階段",
+   "floor": "B1",
+   "x": -309.57,
+   "y": 88.38,
+   "status": "indoor_map",
+   "note": "丸ノ内線東京駅のファイルにある名前付きの階段。どの出口・どこへの階段かは未確認"
+  },
+  {
+   "id": "st:mlit_525b9b038311444ea76d657bda592941",
+   "name": "L階段",
+   "floor": "B1",
+   "x": -347.51,
+   "y": 76.82,
+   "status": "indoor_map",
+   "note": "丸ノ内線東京駅のファイルにある名前付きの階段。どの出口・どこへの階段かは未確認"
+  }
+ ],
+ "yaesu_openings": [
+  {
+   "id": "yo:frn_0a09f472-d575-42ce-a5a3-708d86213344",
+   "frn_id": "frn_0a09f472-d575-42ce-a5a3-708d86213344",
+   "x": 259.0,
+   "y": -132.1,
+   "w": 21.4,
+   "h": 15.1,
+   "zmax": 4.71,
+   "stair_id": null,
+   "stair_dist": 15.6,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い"
+  },
+  {
+   "id": "yo:frn_398b8163-6b03-4f51-b8e8-a1e1700dadeb",
+   "frn_id": "frn_398b8163-6b03-4f51-b8e8-a1e1700dadeb",
+   "x": 336.0,
+   "y": -171.5,
+   "w": 20.2,
+   "h": 14.5,
+   "zmax": 4.71,
+   "stair_id": null,
+   "stair_dist": 14.5,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い"
+  },
+  {
+   "id": "yo:frn_62d7148e-ae6e-4944-86ee-305c15703816",
+   "frn_id": "frn_62d7148e-ae6e-4944-86ee-305c15703816",
+   "x": 382.8,
+   "y": -215.2,
+   "w": 10.1,
+   "h": 6.9,
+   "zmax": 6.62,
+   "stair_id": null,
+   "stair_dist": 7.9,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "24",
+     "25"
+    ],
+    "basis": "八重洲通りの南側・中央通りの角。行き先の越前屋ビルが最も近い（約 14 m）が、西隣の出入口も 24 番の候補なので決められない"
+   }
+  },
+  {
+   "id": "yo:frn_cc3885c0-a752-44e3-a920-5c7b0f5538ca",
+   "frn_id": "frn_cc3885c0-a752-44e3-a920-5c7b0f5538ca",
+   "x": 100.6,
+   "y": -199.4,
+   "w": 5.7,
+   "h": 6.8,
+   "zmax": 4.46,
+   "stair_id": null,
+   "stair_dist": 64.8,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "7",
+     "8"
+    ],
+    "basis": "駅側で、南口の改札より約 40 m 南。案内図の 7 番か 8 番と見られるが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_bc3e92a0-5750-441f-9f12-e0d19ce98fb6",
+   "frn_id": "frn_bc3e92a0-5750-441f-9f12-e0d19ce98fb6",
+   "x": 286.4,
+   "y": -146.0,
+   "w": 9.6,
+   "h": 7.5,
+   "zmax": 6.78,
+   "stair_id": null,
+   "stair_dist": 16.4,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い"
+  },
+  {
+   "id": "yo:frn_4419d653-1dcb-411d-88c5-746afaa45294",
+   "frn_id": "frn_4419d653-1dcb-411d-88c5-746afaa45294",
+   "x": 163.5,
+   "y": -64.9,
+   "w": 6.3,
+   "h": 6.1,
+   "zmax": 4.56,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room12_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 3.22,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "10",
+     "F",
+     "G",
+     "H"
+    ],
+    "basis": "駅前の広場の中ほど。案内図の 10 番か、地下街の中ほどの F・G・H のどれかと見られるが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_2f845504-bcfb-4e2a-813c-aa103122973d",
+   "frn_id": "frn_2f845504-bcfb-4e2a-813c-aa103122973d",
+   "x": 257.7,
+   "y": 33.7,
+   "w": 5.9,
+   "h": 7.2,
+   "zmax": 6.42,
+   "stair_id": null,
+   "stair_dist": 6.9,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "16"
+    ],
+    "basis": "同上"
+   }
+  },
+  {
+   "id": "yo:frn_bea7ff37-8c6a-4a51-94a9-42bcf241609d",
+   "frn_id": "frn_bea7ff37-8c6a-4a51-94a9-42bcf241609d",
+   "x": 342.8,
+   "y": -155.5,
+   "w": 10.0,
+   "h": 6.8,
+   "zmax": 7.0,
+   "stair_id": null,
+   "stair_dist": 8.1,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "22"
+    ],
+    "basis": "八重洲通りの北側・駅から3〜4番目。22 番かもしれないが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_6f87f73f-9357-4e00-bb96-6bf769494ec5",
+   "frn_id": "frn_6f87f73f-9357-4e00-bb96-6bf769494ec5",
+   "x": 82.7,
+   "y": -231.8,
+   "w": 12.9,
+   "h": 19.4,
+   "zmax": 8.02,
+   "stair_id": null,
+   "stair_dist": 47.6,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "7"
+    ],
+    "basis": "駅側の南寄り。案内図の 7 番（JR高速バスのりばの方）かもしれないが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_e6a8326e-0a95-40c4-aa39-aad83839c88d",
+   "frn_id": "frn_e6a8326e-0a95-40c4-aa39-aad83839c88d",
+   "x": 238.0,
+   "y": 0.1,
+   "w": 5.7,
+   "h": 8.8,
+   "zmax": 6.95,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room3_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 3.32,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika": {
+    "no": "17",
+    "toward": [
+     "八重洲口会館ビル"
+    ],
+    "side": "外堀通り 東側・北から2番目",
+    "confidence": "two_sources",
+    "basis": "OpenStreetMap に名前が「Yaechika出入口17」の地下への階段の線があり、この出入口から 7.0 m。案内図でも外堀通りの東側・北から2番目で、行き先の八重洲口会館が最も近い（約 23 m）"
+   }
+  },
+  {
+   "id": "yo:frn_c7fe7c95-5040-4659-9299-cbccdfcd6f1b",
+   "frn_id": "frn_c7fe7c95-5040-4659-9299-cbccdfcd6f1b",
+   "x": 269.3,
+   "y": 50.5,
+   "w": 6.1,
+   "h": 7.5,
+   "zmax": 6.68,
+   "stair_id": null,
+   "stair_dist": 7.0,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "16"
+    ],
+    "basis": "外堀通りの東側の北の端に、出入口が2つ並ぶ。16 番はどちらか一方と見られるが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_e7f88d5c-1464-4893-a0c7-f9fbc2f2f214",
+   "frn_id": "frn_e7f88d5c-1464-4893-a0c7-f9fbc2f2f214",
+   "x": 118.9,
+   "y": -163.7,
+   "w": 5.7,
+   "h": 6.8,
+   "zmax": 4.34,
+   "stair_id": null,
+   "stair_dist": 43.2,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "8",
+     "9"
+    ],
+    "basis": "駅側。JR の八重洲南口の改札と同じくらいの南北の位置にあり、案内図の 8 番か 9 番と見られるが、決められない"
+   }
+  },
+  {
+   "id": "yo:frn_eb448d95-a9ac-471d-a1a7-96d568c7e0c0",
+   "frn_id": "frn_eb448d95-a9ac-471d-a1a7-96d568c7e0c0",
+   "x": 361.2,
+   "y": -184.2,
+   "w": 6.8,
+   "h": 4.8,
+   "zmax": 4.89,
+   "stair_id": null,
+   "stair_dist": 16.0,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い"
+  },
+  {
+   "id": "yo:frn_a0eaab61-9cc4-4caf-99cb-87ecf9f56834",
+   "frn_id": "frn_a0eaab61-9cc4-4caf-99cb-87ecf9f56834",
+   "x": 232.4,
+   "y": -99.0,
+   "w": 10.0,
+   "h": 6.8,
+   "zmax": 7.14,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room11_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 3.52,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "21"
+    ],
+    "basis": "19 番のすぐ東。行き先のトフロム八重洲（TOFROM YAESU THE FRONT）まで約 20 m で、21 番かもしれない"
+   }
+  },
+  {
+   "id": "yo:frn_399565bb-feda-40ec-9462-37c2fce3ad5c",
+   "frn_id": "frn_399565bb-feda-40ec-9462-37c2fce3ad5c",
+   "x": 230.3,
+   "y": -29.4,
+   "w": 3.9,
+   "h": 10.1,
+   "zmax": 6.49,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room7_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 3.22,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika": {
+    "no": "18",
+    "toward": [
+     "新槇町ビル"
+    ],
+    "side": "外堀通り 東側・北から3番目",
+    "confidence": "medium",
+    "basis": "図で外堀通りの東側・北から3番目。行き先の新槇町ビル（OpenStreetMap）が最も近い（約 30 m）"
+   }
+  },
+  {
+   "id": "yo:frn_fad79ebc-189c-45e9-8b78-0de3d273c88b",
+   "frn_id": "frn_fad79ebc-189c-45e9-8b78-0de3d273c88b",
+   "x": 219.2,
+   "y": -73.9,
+   "w": 7.6,
+   "h": 9.8,
+   "zmax": 7.83,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room8_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 3.22,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika": {
+    "no": "19",
+    "toward": [],
+    "side": "八重洲通り 北側・駅から1番目",
+    "confidence": "two_sources",
+    "basis": "OpenStreetMap に名前が「出入口19」の建物があり、その中心が、この出入口から 0.5 m。番号 19 の付いた入口の点（3.8 m）と地下への階段の線（3.1 m）もある。案内図でも八重洲通りの北側・駅から1番目"
+   }
+  },
+  {
+   "id": "yo:frn_f2f60b08-79e1-4aa0-a217-e3a2f82ae4f9",
+   "frn_id": "frn_f2f60b08-79e1-4aa0-a217-e3a2f82ae4f9",
+   "x": 294.2,
+   "y": -130.7,
+   "w": 10.0,
+   "h": 6.8,
+   "zmax": 7.2,
+   "stair_id": null,
+   "stair_dist": 7.4,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "21",
+     "22"
+    ],
+    "basis": "八重洲通りの北側・駅から2〜3番目。21 番か 22 番と見られるが、すぐ西にも 21 番の候補があるので決められない"
+   }
+  },
+  {
+   "id": "yo:frn_9577c46f-0891-43d1-a628-58a091dcdff0",
+   "frn_id": "frn_9577c46f-0891-43d1-a628-58a091dcdff0",
+   "x": 56.0,
+   "y": -287.1,
+   "w": 5.6,
+   "h": 8.5,
+   "zmax": 6.48,
+   "stair_id": null,
+   "stair_dist": 53.2,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika": {
+    "no": "6",
+    "toward": [
+     "グラントウキョウサウスタワー",
+     "京葉線方面"
+    ],
+    "side": "南の端（サウステラス）",
+    "confidence": "low",
+    "basis": "案内図で南の端。行き先のグラントウキョウサウスタワーが最も近い（約 31 m）が、北隣の出入口からもサウスタワーが最も近いので、決め手は並び順"
+   }
+  },
+  {
+   "id": "yo:frn_019f92f7-4f76-4281-b58f-8172df5b8b7e",
+   "frn_id": "frn_019f92f7-4f76-4281-b58f-8172df5b8b7e",
+   "x": 277.9,
+   "y": -161.3,
+   "w": 10.0,
+   "h": 6.8,
+   "zmax": 6.75,
+   "stair_id": null,
+   "stair_dist": 7.5,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "1",
+     "26"
+    ],
+    "basis": "同上"
+   }
+  },
+  {
+   "id": "yo:frn_dc2035a9-0326-4c81-9103-038afd544917",
+   "frn_id": "frn_dc2035a9-0326-4c81-9103-038afd544917",
+   "x": 377.2,
+   "y": -173.2,
+   "w": 10.0,
+   "h": 6.8,
+   "zmax": 6.9,
+   "stair_id": "ubld_8182a1f3-d55c-4971-83cc-82a5826faf30_room23_IntInstallation_EF_35",
+   "stair_dist": 0.0,
+   "top_tp": 4.12,
+   "status": "two_datasets",
+   "note": "PLATEAU 都市設備の「地下出入口」。地下街の階段の上端が 0.0 m 以内にある（2種のデータで重なる）。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika": {
+    "no": "23",
+    "toward": [
+     "中央通り 日本橋・神田方面",
+     "スターツ八重洲中央ビル"
+    ],
+    "side": "八重洲通り 北側・中央通りの角",
+    "confidence": "low",
+    "basis": "案内図で八重洲通りの北側・中央通りの角。行き先のスターツ八重洲中央ビルまで約 30 m だが、もっと近い名前付きの建物があるので、並び順だけで決めた"
+   }
+  },
+  {
+   "id": "yo:frn_58f8d321-3a56-42a0-8d98-16f944708b72",
+   "frn_id": "frn_58f8d321-3a56-42a0-8d98-16f944708b72",
+   "x": 361.2,
+   "y": -204.1,
+   "w": 10.1,
+   "h": 6.8,
+   "zmax": 6.76,
+   "stair_id": null,
+   "stair_dist": 8.2,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "24",
+     "25"
+    ],
+    "basis": "八重洲通りの南側・中央通り寄り。案内図で 23 番の向かいは 24 番で、この出入口は 23 番と通りを挟んで向かい合う。行き先の建物も 24 番のもの（セントラルビル・越前屋ビル）が近い。24 番か 25 番か決められない"
+   }
+  },
+  {
+   "id": "yo:frn_477a6d0d-42ae-4684-a04d-7fa6f62beae5",
+   "frn_id": "frn_477a6d0d-42ae-4684-a04d-7fa6f62beae5",
+   "x": 256.6,
+   "y": -150.5,
+   "w": 10.1,
+   "h": 6.8,
+   "zmax": 6.73,
+   "stair_id": null,
+   "stair_dist": 7.6,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い",
+   "yaechika_candidates": {
+    "nos": [
+     "1",
+     "26"
+    ],
+    "basis": "八重洲通りの南側で、駅に近い方に出入口が2つ並ぶ（約 24 m 離れている）。1 番と 26 番の、どちらがどちらか決められない"
+   }
+  },
+  {
+   "id": "yo:frn_94f0777a-bc5d-4ce9-bd10-36033677db71",
+   "frn_id": "frn_94f0777a-bc5d-4ce9-bd10-36033677db71",
+   "x": 315.5,
+   "y": -161.1,
+   "w": 10.8,
+   "h": 9.1,
+   "zmax": 4.63,
+   "stair_id": null,
+   "stair_dist": 16.6,
+   "top_tp": null,
+   "status": "plateau_frn",
+   "note": "PLATEAU 都市設備の「地下出入口」。近くに地下街の階段のデータは無い。PLATEAU のデータには出入口の番号・名前は無い"
+  }
+ ],
+ "yaechika": {
+  "operator": "八重洲地下街株式会社",
+  "source": {
+   "page": "https://www.yaechika.com/floormap/",
+   "viewed": "2026-10-27",
+   "method": "アプリ内ブラウザでページ内の図（SVG）を拡大表示し、目視で番号・行き先の文言・「閉鎖中」の表示を書き写した。図形・座標は使っていない。転載の許可は未確認なので、図の画像は履歴に入れない（raw/ に確認用として置くだけ）",
+   "figure_orientation": "図は東京駅を下に置いた形で、北が上ではない（上がおおむね東、左が北）。縮尺も合っていない。そのため、図の上の位置を座標として使わず、並び順と行き先の文言だけを使う",
+   "copyright": "Copyright(C) Yaesu shopping mall Co.,Ltd"
+  },
+  "exits": [
+   {
+    "no": "1",
+    "kind": "ground_stairs",
+    "toward": [
+     "YANMAR TOKYO"
+    ],
+    "side": "八重洲通り 南側・駅から1番目"
+   },
+   {
+    "no": "2",
+    "kind": "ground_stairs",
+    "toward": [
+     "東京ミッドタウン八重洲",
+     "バスターミナル東京八重洲 地下B"
+    ],
+    "side": "外堀通り 東側・南の街区"
+   },
+   {
+    "no": "3",
+    "kind": "ground_stairs",
+    "toward": [
+     "東京ミッドタウン八重洲",
+     "バスターミナル東京八重洲 地下B"
+    ],
+    "side": "外堀通り 東側・南の街区"
+   },
+   {
+    "no": "4",
+    "kind": "ground_stairs",
+    "toward": [
+     "東京ミッドタウン八重洲",
+     "バスターミナル東京八重洲 地下B"
+    ],
+    "side": "外堀通り 東側・南の街区"
+   },
+   {
+    "no": "5",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "外堀通り 東側・南の街区",
+    "closed": true,
+    "closed_text": "閉鎖中"
+   },
+   {
+    "no": "6",
+    "kind": "ground_stairs",
+    "toward": [
+     "グラントウキョウサウスタワー",
+     "京葉線方面"
+    ],
+    "side": "南の端（サウステラス）"
+   },
+   {
+    "no": "7",
+    "kind": "ground_stairs",
+    "toward": [
+     "JR高速バス",
+     "都営バスのりば"
+    ],
+    "side": "駅側・南口の南"
+   },
+   {
+    "no": "8",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "駅側・南口の北"
+   },
+   {
+    "no": "9",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "駅側・中央口の南"
+   },
+   {
+    "no": "10",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "駅側・中央口の正面のやや南"
+   },
+   {
+    "no": "13",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "駅側・北口の近く"
+   },
+   {
+    "no": "14",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "北の街区・北口通り"
+   },
+   {
+    "no": "15",
+    "kind": "ground_stairs",
+    "toward": [
+     "鉄鋼ビルディング（リムジンバスのりば）"
+    ],
+    "side": "北の端（ノーステラス）"
+   },
+   {
+    "no": "16",
+    "kind": "ground_stairs",
+    "toward": [
+     "トフロム八重洲",
+     "バスターミナル東京八重洲 地下A",
+     "外堀通り 呉服橋・神田方面"
+    ],
+    "side": "外堀通り 東側・北から1番目"
+   },
+   {
+    "no": "17",
+    "kind": "ground_stairs",
+    "toward": [
+     "八重洲口会館ビル"
+    ],
+    "side": "外堀通り 東側・北から2番目"
+   },
+   {
+    "no": "18",
+    "kind": "ground_stairs",
+    "toward": [
+     "新槇町ビル"
+    ],
+    "side": "外堀通り 東側・北から3番目"
+   },
+   {
+    "no": "19",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "八重洲通り 北側・駅から1番目"
+   },
+   {
+    "no": "21",
+    "kind": "ground_stairs",
+    "toward": [
+     "トフロム八重洲",
+     "バスターミナル東京八重洲 地下A"
+    ],
+    "side": "八重洲通り 北側・駅から2番目"
+   },
+   {
+    "no": "22",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "八重洲通り 北側・駅から3番目"
+   },
+   {
+    "no": "23",
+    "kind": "ground_stairs",
+    "toward": [
+     "中央通り 日本橋・神田方面",
+     "スターツ八重洲中央ビル"
+    ],
+    "side": "八重洲通り 北側・中央通りの角"
+   },
+   {
+    "no": "24",
+    "kind": "ground_stairs",
+    "toward": [
+     "中央通り 京橋・銀座方面",
+     "越前屋ビル",
+     "セントラルビル",
+     "三井ガーデンホテル京橋",
+     "アーティゾン美術館"
+    ],
+    "side": "八重洲通り 南側・中央通りの角"
+   },
+   {
+    "no": "25",
+    "kind": "ground_stairs",
+    "toward": [
+     "八重洲ダイビル"
+    ],
+    "side": "八重洲通り 南側・駅から3番目"
+   },
+   {
+    "no": "26",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "八重洲通り 南側・駅から2番目"
+   },
+   {
+    "no": "F",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "地下街の中ほど（外堀地下2番通り）"
+   },
+   {
+    "no": "G",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "地下街の中ほど（メイン・アベニュー）"
+   },
+   {
+    "no": "H",
+    "kind": "ground_stairs",
+    "toward": [],
+    "side": "地下街の中ほど（外堀地下1番通りの近く）"
+   },
+   {
+    "no": "31",
+    "kind": "b2f_stairs",
+    "toward": [],
+    "side": "地下2階へ"
+   },
+   {
+    "no": "32",
+    "kind": "b2f_stairs",
+    "toward": [],
+    "side": "地下2階へ"
+   },
+   {
+    "no": "33",
+    "kind": "b2f_stairs",
+    "toward": [],
+    "side": "地下2階へ"
+   },
+   {
+    "no": "34",
+    "kind": "b2f_stairs",
+    "toward": [],
+    "side": "地下2階へ"
+   }
+  ],
+  "not_on_map": "11・12・20 番と 27〜30 番は、図に描かれていない（無い番号か、今は使っていない番号かは分からない）",
+  "unmatched_note": "八重洲通りの真ん中あたりにある5か所は、案内図のどの番号にも当てはまらない。大きい2か所は駐車場の出入口かもしれないが、確かめていない",
+  "osm_note": "OpenStreetMap（2026-10-27 Overpass、raw/osm/yaesu-nodes-2026-10-27.json）で番号の付いた点を探した。番号の無い地下鉄出入口の点が、24/25 番の候補の2か所（0.3 m・2.9 m）と 21 番の候補（3.3 m）にもあるが、番号は無いので決め手にはならない",
+  "osm_only": [
+   {
+    "no": "2",
+    "osm": "node/12860278843",
+    "lat": 35.679478,
+    "lon": 139.768746,
+    "basis": "OpenStreetMap に番号「2」の付いた入口の点がある（名前は無い）。東京ミッドタウン八重洲の西側の前で、案内図の 2 番（行き先：東京ミッドタウン八重洲）と合う。PLATEAU の地下出入口はここに無い。ミッドタウンの建物の入口の番号かもしれず、確かめていない",
+    "x": 149.0,
+    "y": -191.06
+   }
+  ],
+  "matched": [
+   "6",
+   "17",
+   "18",
+   "19",
+   "23"
+  ]
+ }
+}
