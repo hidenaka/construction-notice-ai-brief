@@ -1,0 +1,5 @@
+/* Full-screen map only: allow native panel scrolling, give pinch to the map. */
+html,body{touch-action:pan-x pan-y;overscroll-behavior:none}
+#view,#view canvas,#labels,#labels button,.bar,#mobile-nav,#compass,#floor-key,#schem,#schemB2{touch-action:none}
+#card,#cardBody,#exitPanel,.mobile-options,.mobile-search,#results,.legend,.foot{touch-action:pan-y}
+#q{touch-action:pan-x pan-y;font-size:16px}
