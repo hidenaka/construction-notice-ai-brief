@@ -1,0 +1,47 @@
+{
+  "public_url": "https://hidenaka.github.io/construction-notice-ai-brief/reports/contest-entry-review/rev-01/",
+  "version": "rev-01",
+  "published_date": "2026-10-30",
+  "files": [
+    {
+      "path": "assets/draft-texts.json",
+      "bytes": 502,
+      "sha256": "3b110bccb1aca527afe90a058dacea40886188be6c07817d05fb9389b66dfd80"
+    },
+    {
+      "path": "assets/odpt-eligibility.md",
+      "bytes": 4333,
+      "sha256": "b4a804052ed2a87932f3e30e47021bacf6327afec9240b7c87e5a73fddf93d40"
+    },
+    {
+      "path": "assets/odpt-inquiry.md",
+      "bytes": 2103,
+      "sha256": "6f66ebb2320230d5be550266d1cb42ac8338c304355367098ccc72f39ac112b3"
+    },
+    {
+      "path": "assets/udc-confirmation.md",
+      "bytes": 2940,
+      "sha256": "4b118e23eb8df1a1fd51e92394fa72fecd17b1900325fd4dd23e0e5757b84566"
+    },
+    {
+      "path": "index.html",
+      "bytes": 10121,
+      "sha256": "1dcd2ff9141709638f3ae1acf2adeb48cbbb429906ffcd345b1ebfdc893ff2b1"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 616061,
+      "sha256": "cccdae025e1e7a0d577e372f3ed07d304de65494f4e2f0740c08aba644e5f5af"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 3037452,
+      "sha256": "59a96cd06cf1046358c0e8a151b3c71aa051cfd917ef7af9f3ae3724b39fa4c7"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 1522,
+      "sha256": "d1014ec161e0b07a1a9e04b3dab7b10f2d8cec675cb6b083fd8681371f35bbbd"
+    }
+  ]
+}
