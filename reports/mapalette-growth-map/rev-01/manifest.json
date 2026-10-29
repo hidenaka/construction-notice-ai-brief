@@ -1,0 +1,38 @@
+{
+  "version": "rev-01",
+  "publishedDate": "2026-10-30",
+  "public_url": "https://hidenaka.github.io/construction-notice-ai-brief/reports/mapalette-growth-map/rev-01/",
+  "nodes": 28,
+  "counts": {
+    "達成": 16,
+    "進行中": 4,
+    "次の挑戦": 8
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 28418,
+      "sha256": "95c900a6670a714d4e93217663419334106050bb027ea00115c2398b75ec4847"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 364066,
+      "sha256": "4946ea5b879c358fe5b5ba3620864627c9b0ca74ac8a82db1682a0868ebfb131"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 1357447,
+      "sha256": "02b78b1775207affa0b6888fee9011d893ff3dbb80e78d582160acf68b659fbf"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 901,
+      "sha256": "3704e24a94a60ba014fd14e653e6239c69314698860126754a41a32bb8d82beb"
+    },
+    {
+      "path": "nodes-public.json",
+      "bytes": 16003,
+      "sha256": "df36913da54b191607b88b5ed09127c945da7fd8aa52f8e36f1468a410a765e2"
+    }
+  ]
+}
