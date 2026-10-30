@@ -1,0 +1,42 @@
+{
+  "version": "rev-02",
+  "date": "2026-10-30",
+  "scope": "Public business milestones and circular-board review only",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 5847,
+      "sha256": "a3a05cef7c8ec65aa87c5af3b37f1efb6bc625a84692cbfbf92e84e7016c358e"
+    },
+    {
+      "path": "style.css",
+      "bytes": 13975,
+      "sha256": "d1a8bda84865079c575002784d06670abf1540c6679799945dd59d9cb31be82f"
+    },
+    {
+      "path": "board.js",
+      "bytes": 18474,
+      "sha256": "dc5c1cc12143b52080485a041cce665c2c310c1e4788dc8a7c6c5fa303d27e6b"
+    },
+    {
+      "path": "nodes-public.json",
+      "bytes": 16003,
+      "sha256": "df36913da54b191607b88b5ed09127c945da7fd8aa52f8e36f1468a410a765e2"
+    },
+    {
+      "path": "media/poster.png",
+      "bytes": 732293,
+      "sha256": "234edd40dcc7ad33226b21930e9068c6d575270d2c70fc40de6ad60ae7bf77ae"
+    },
+    {
+      "path": "media/report.vtt",
+      "bytes": 801,
+      "sha256": "bfd57f985d28846506216f361444081e2be06b65891ceb63391eb45ae461e427"
+    },
+    {
+      "path": "media/report.mp4",
+      "bytes": 2122512,
+      "sha256": "cf1d19be405f59852653a649ccde5eae88bf1ce44bc2fa4313d97d6984d7fed6"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#080e17">
+  <title>MaPalette｜成長盤</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="board.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#node-panel">選んだマスの詳細へ</a>
+  <main>
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">M</span><span>MaPalette<small>マパレット</small></span></div>
+      <div class="page-title"><span class="eyebrow">GROWTH BOARD</span><h1>成長盤</h1></div>
+      <p class="snapshot">事業の決定・準備・成果<br><time datetime="2026-10-30">2026.10.30</time> の記録</p>
+    </header>
+    <div class="board-layout">
+      <section class="board-section" aria-label="六つの分野に広がる成長盤">
+        <div class="board-topline"><p><span class="gold-dot" aria-hidden="true"></span><span id="view-label">全体を見渡す</span></p><span class="board-number">28 <small>マス</small></span></div>
+        <div class="board-stage" id="board-stage">
+          <svg id="skill-board" viewBox="0 0 1100 1100" role="group" aria-label="MaPaletteから六つの分野に広がる28マス。マスを選ぶと詳細を表示します。"><title>MaPalette 成長盤</title></svg>
+          <p class="loading" id="loading" role="status">成長盤を読み込んでいます</p>
+          <div class="zoom-controls" aria-label="盤面の拡大"><button id="zoom-out" type="button" aria-label="盤面を縮小">−</button><button id="zoom-in" type="button" aria-label="盤面を拡大">＋</button></div>
+          <span class="stage-corner" aria-hidden="true">MAPALETTE / 2026</span>
+        </div>
+        <div class="legend" aria-label="マスの状態"><span><i class="legend-done"></i>達成 <b id="done-count">16</b></span><span><i class="legend-wip"></i>進行中 <b id="wip-count">4</b></span><span><i class="legend-next"></i>次の挑戦 <b id="next-count">8</b></span></div>
+        <nav class="branch-controls" id="branch-controls" aria-label="分野を選んで拡大"><button type="button" id="show-all" class="active" aria-pressed="true">全体</button></nav>
+        <p class="board-hint">分野を選ぶと拡大。マスを選んで、ここまでと次の一歩を見る。</p>
+      </section>
+      <aside class="node-panel" id="node-panel" aria-label="選んだマスの詳細" aria-busy="true">
+        <div class="panel-cap"><span>SELECTED NODE</span><span id="node-position">— / 28</span></div>
+        <div class="selected-meta"><span class="node-id" id="selected-id">—</span><span id="detail-status" class="status-badge">読み込み中</span></div>
+        <p id="selected-branch" class="selected-branch">MaPalette</p>
+        <h2 id="detail-title">マスを選んでください</h2>
+        <div class="node-navigation"><button id="previous-node" type="button" aria-label="前のマスを見る">← 前のマス</button><button id="next-node" type="button" aria-label="次のマスを見る">次のマス →</button></div>
+        <div class="detail-section"><h3>取り組んだ人・役割</h3><p id="selected-actor"></p></div>
+        <div class="detail-section"><h3>このマスを埋める条件</h3><p id="detail-condition"></p></div>
+        <div class="detail-section"><h3>ここまでの範囲</h3><p id="selected-detail"></p></div>
+        <div class="detail-section" id="steps-section"><h3>小さな行動</h3><ol id="selected-steps"></ol><p id="no-steps">このマスには小さな行動の追加記録はありません。</p></div>
+        <button id="celebrate" class="celebrate" type="button" hidden>✧ 達成の光を再生</button>
+        <p class="effect-note" id="effect-note" hidden>記録は変えず、光の演出だけを再生します。</p>
+      </aside>
+    </div>
+    <p class="selection-announcement sr-only" id="selection-announcement" role="status" aria-live="polite"></p>
+    <section class="below-board">
+      <details class="all-nodes"><summary>28マスを一覧から選ぶ <span aria-hidden="true">＋</span></summary><div id="node-list" class="node-list"></div></details>
+      <details class="policy"><summary>成長盤の見方</summary><p>「達成」は、書かれた範囲の判断・準備・成果が記録で確認できる状態です。下書きと提出、試作と商用納品を分けています。本人の技能レベルの判定ではありません。</p><p>線は同じ分野のつながりを表します。進む順番を強制せず、次の挑戦も自由に選んで読めます。新たな外部連絡・応募・契約の承認を意味するものではありません。</p><p>マスの状態はこの画面では変更しません。公開版には、一般的なマスと状態だけを載せています。</p></details>
+      <section class="report-section" aria-labelledby="report-heading"><div><span class="eyebrow">GUIDE MOVIE</span><h2 id="report-heading">成長盤の歩き方</h2><p>実際の画面で、広がりと操作を確かめる。</p></div><video controls playsinline preload="metadata" poster="media/poster.png"><source src="media/report.mp4" type="video/mp4"><track kind="captions" src="media/report.vtt" srclang="ja" label="日本語" default>お使いのブラウザでは動画を再生できません。</video><p class="voice-credit">日本語字幕 · VOICEVOX:ずんだもん／ノーマル</p></section>
+    </section>
+    <footer><span>MaPalette</span><p>成長盤 rev-02 · 2026-10-30<br>事業の保存記録をもとにした確認版 · VOICEVOX:ずんだもん</p></footer>
+  </main>
+</body>
+</html>
